@@ -1,0 +1,58 @@
+export default function(sequelize, DataTypes) {
+  const Suppliers = sequelize.define('Suppliers', {
+    name: {
+      type: DataTypes.STRING,
+    },
+    alias: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    street: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    street_number: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    city: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    country: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    phone: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    active: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+    updated_at: {
+      type: DataTypes.DATE,
+      defaultValue: () => new Date(),
+    },
+    created_at: {
+      type: DataTypes.DATE,
+      defaultValue: () => new Date(),
+    },
+  }, {
+    timestamps: false,
+    tableName: 'suppliers',
+    underscored: true,
+  });
+
+
+  Suppliers.associate = (models: any) => {
+    Suppliers.hasMany(models.Users, { foreignKey: 'supplier_id' });
+  };
+
+  return Suppliers;
+}
