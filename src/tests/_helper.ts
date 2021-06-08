@@ -9,6 +9,8 @@ import * as UsersLogic from '../logic/users';
 const PORT = getenv('PORT');
 
 let adminUser;
+let supplier;
+let transportAgent;
 
 export const request = supertest(`http://localhost:${PORT}`);
 
@@ -16,12 +18,45 @@ export const delay = (ms) => new Promise((resolve): void => {
   setTimeout(() => resolve(true), ms);
 });
 
+export const createSupplier = async (forceNew = false): Promise<Supplier> => {
+  if (!forceNew && supplier) {
+    return supplier;
+  }
+
+  const created = await models.Suppliers.create({
+    name: `Name - ${faker.company.companyName()}`,
+    alias: `Alias - ${faker.company.companyName()}`,
+    street: 'street',
+    street_number: '123123',
+    city: 'City',
+    zipcode: '123',
+    country: 'AR',
+    email: faker.internet.email().toLowerCase(),
+    phone: '123123123',
+    active: true,
+  });
+
+  supplier = created.toJSON();
+
+  return supplier;
+};
+
+export const setUserSupplier = async (user, supplier): Promise<void> => {
+  await models.Users.update({
+    supplier_id: supplier.id,
+  }, {
+    where: {
+      id: user.id,
+    },
+  });
+};
+
 export const createUser = async (data = {}): Promise<{ user: User, token: string }> => {
   const user = await models.Users.create({
     name: faker.name.firstName(),
     surname: faker.name.lastName(),
     email: faker.internet.email().toLowerCase(),
-    password: 'Testtest',
+    password: 'testtest',
     ...data,
   });
 
@@ -31,8 +66,66 @@ export const createUser = async (data = {}): Promise<{ user: User, token: string
   return { user: json, token };
 };
 
+export const createTransportAgent = async (data = {}): Promise<TransportAgent> => {
+  if (transportAgent) {
+    return transportAgent;
+  }
+
+  const created = await models.TransportAgents.create({
+    name: `Name - ${faker.company.companyName()}`,
+    alias: `Alias - ${faker.company.companyName()}`,
+    street: 'street',
+    street_number: '123123',
+    city: 'City',
+    country: 'AR',
+  });
+
+  transportAgent = created.toJSON();
+
+  return transportAgent;
+};
+
+export const createTour = async (supplier: Supplier, transportAgent: TransportAgent): Promise<Tour> => {
+  const created = await models.Tours.create({
+    supplier_id: supplier.id,
+    transport_agent_id: transportAgent.id,
+    name: `Tour: ${faker.company.companyName()}`,
+    description: 'this is the tour 1',
+    active: true,
+  });
+
+  return created.toJSON();
+};
+
+export const createCustomer = async (supplier: Supplier, tour: Tour): Promise<Customer> => {
+  const created = await models.Customers.create({
+    supplier_id: supplier.id,
+    tour_id: tour.id,
+    tour_position: 1,
+    name: faker.company.companyName(),
+    alias: faker.company.companyName(),
+    street: 'st',
+    street_number: '123123',
+    city: 'City 2',
+    zipcode: '123',
+    country: 'BR',
+    email: faker.internet.email().toLowerCase(),
+    phone: '123321312312',
+    sms_notifications: false,
+    email_notifications: true,
+    active: true,
+  });
+
+  return created.toJSON();
+};
+
 export default {
   request,
   delay,
   createUser,
+  createSupplier,
+  setUserSupplier,
+  createTransportAgent,
+  createTour,
+  createCustomer,
 };

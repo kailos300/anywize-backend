@@ -42,7 +42,7 @@ describe('Auth tests', () => {
       .post('/api/auth/login')
       .send({
         email: user.email,
-        password: 'Testtest',
+        password: 'testtest',
       });
 
     expect(res.status).equal(200);

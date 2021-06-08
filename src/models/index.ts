@@ -26,7 +26,6 @@ fs
   .readdirSync(__dirname)
   .filter((file) => (file.indexOf('.') !== 0) && !file.includes('index') && !file.includes('.map') && (file.slice(-3) === ext))
   .forEach((file) => {
-    console.log(file);
     const model = require(path.join(__dirname, file)).default(sequelize, Sequelize.DataTypes);
     models[model.name] = model;
   });

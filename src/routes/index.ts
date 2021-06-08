@@ -10,6 +10,7 @@ import auth from './auth';
 import suppliers from './suppliers';
 import users from './users';
 import tours from './tours';
+import customers from './customers';
 
 router.get('/ping', async (req, res, next) => {
   try {
@@ -25,5 +26,6 @@ router.use('/api/auth', auth);
 router.use('/api/suppliers', isAuthenticated, isAdmin, suppliers);
 router.use('/api/users', isAuthenticated, users);
 router.use('/api/tours', isAuthenticated, tours);
+router.use('/api/customers', isAuthenticated, customers);
 
 export default router;

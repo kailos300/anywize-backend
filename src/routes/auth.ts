@@ -22,6 +22,17 @@ const router = Router();
  *         "name": "test",
  *         "surname": "tests",
  *         "email": "test@test.com",
+ *         "Supplier": {
+ *            name: "Sup",
+ *            alias: "lier",
+ *            street: "St",
+ *            street_number: "123",
+ *            city: "Cty",
+ *            zipcode: "12312",
+ *            country: "BR",
+ *            email: "sup@plier.com",
+ *            phone: "123123123",
+ *         }
  *       }
  *     }
  *

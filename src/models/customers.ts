@@ -1,39 +1,51 @@
 export default function(sequelize, DataTypes) {
-  const Suppliers = sequelize.define('Suppliers', {
+  const Customers = sequelize.define('Customers', {
+    supplier_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    tour_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    tour_position: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     name: {
       type: DataTypes.STRING,
     },
     alias: {
       type: DataTypes.STRING,
-      allowNull: true,
     },
     street: {
       type: DataTypes.STRING,
-      allowNull: true,
     },
     street_number: {
       type: DataTypes.STRING,
-      allowNull: true,
     },
     city: {
       type: DataTypes.STRING,
-      allowNull: true,
     },
     zipcode: {
       type: DataTypes.STRING,
-      allowNull: true,
     },
     country: {
       type: DataTypes.STRING,
-      allowNull: true,
     },
     email: {
       type: DataTypes.STRING,
-      allowNull: false,
     },
     phone: {
       type: DataTypes.STRING,
-      allowNull: false,
+    },
+    sms_notifications: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    email_notifications: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
     },
     active: {
       type: DataTypes.BOOLEAN,
@@ -49,14 +61,15 @@ export default function(sequelize, DataTypes) {
     },
   }, {
     timestamps: false,
-    tableName: 'suppliers',
+    tableName: 'customers',
     underscored: true,
   });
 
 
-  Suppliers.associate = (models: any) => {
-    Suppliers.hasMany(models.Users, { foreignKey: 'supplier_id' });
+  Customers.associate = (models: any) => {
+    Customers.belongsTo(models.Suppliers, { foreignKey: 'supplier_id' });
+    Customers.belongsTo(models.Tours, { foreignKey: 'tour_id' });
   };
 
-  return Suppliers;
+  return Customers;
 }

@@ -10,6 +10,14 @@ const passport = require('passport');
 const debug = Debug('anywize');
 const app = express();
 
+declare global {
+  namespace Express {
+    interface Request {
+      user?: User;
+    }
+  }
+}
+
 app.disable('x-powered-by');
 app.use(compression());
 

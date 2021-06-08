@@ -23,6 +23,11 @@ const router = Router();
  *       "active": true,
  *       "created_at": "2021-06-01T10:00:00",
  *       "updated_at": "2021-06-01T10:00:00",
+ *       "TransportAgent": {
+ *         "id": 1,
+ *         "name": "TA",
+ *         "alias": "TA Alias",
+ *       },
  *     }
  *
  * @apiErrorExample Unauthenticated:

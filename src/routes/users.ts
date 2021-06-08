@@ -13,18 +13,30 @@ const router = Router();
  *     GET /api/users/me
  *
  * @apiSuccessExample Success-Response:
- *    [{
+ *    {
  *      id: 1,
- *      name: "Supplier",
- *      alias: "Supplier alias",
+ *      name: "Name",
+ *      surname: "Surname",
+ *      email: "bla@bla.com",
  *      active: true,
  *      created_at: "2021-01-01T12:00:00"
- *    }]
+ *      Supplier: {
+ *         name: "Sup",
+ *         alias: "lier",
+ *         street: "St",
+ *         street_number: "123",
+ *         city: "Cty",
+ *         zipcode: "12312",
+ *         country: "BR",
+ *         email: "sup@plier.com",
+ *         phone: "123123123",
+ *      }
+ *    }
  *
  * @apiErrorExample Error unauthenticated:
  *     HTTP/1.1 401
  *
  */
-router.get('/', UsersCtrl.me);
+router.get('/me', UsersCtrl.me);
 
 export default router;

@@ -33,6 +33,21 @@ export default {
           active: true,
         },
         raw: true,
+        nest: true,
+        include: [{
+          model: models.Suppliers,
+          attributes: [
+            'name',
+            'alias',
+            'street',
+            'street_number',
+            'city',
+            'zipcode',
+            'country',
+            'email',
+            'phone',
+          ],
+        }],
       });
 
       if (!user) {

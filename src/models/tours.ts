@@ -36,6 +36,7 @@ export default function(sequelize, DataTypes) {
 
   Tours.associate = (models: any) => {
     Tours.belongsTo(models.Suppliers, { foreignKey: 'supplier_id' });
+    Tours.belongsTo(models.TransportAgents, { foreignKey: 'transport_agent_id' });
   };
 
   return Tours;

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import createError from 'http-errors';
 import models from '../models';
-import ToursValidator from '../validators/tours';
+import CustomersValidators from '../validators/customers';
 
 export default {
   list: async (req: Request, res: Response, next: NextFunction) => {
@@ -9,7 +9,7 @@ export default {
       const { user } = req;
       const { limit, offset } = req.query;
 
-      const { rows, count } = await models.Tours.findAndCountAll({
+      const { rows, count } = await models.Customers.findAndCountAll({
         limit: parseInt(limit || 20, 10),
         offset: parseInt(offset || 0, 10),
         raw: true,
@@ -32,22 +32,22 @@ export default {
       const { id } = req.params;
       const { user } = req;
 
-      const tour = await models.Tours.findOne({
+      const customer = await models.Customers.findOne({
         where: {
           id,
           supplier_id: user.supplier_id,
         },
         include: [{
-          model: models.TransportAgents,
-          attributes: ['id', 'name', 'alias'],
+          model: models.Tours,
+          attributes: ['id', 'name'],
         }],
       });
 
-      if (!tour) {
+      if (!customer) {
         throw createError(404, 'NOT_FOUND');
       }
 
-      return res.send(tour);
+      return res.send(customer);
     } catch (err) {
       return next(err);
     }
@@ -56,14 +56,27 @@ export default {
     try {
       const { body, user } = req;
 
-      await ToursValidator.create(body);
+      await CustomersValidators.create(body);
 
-      const tour = await models.Tours.create({
+      const tour = await models.Tours.findOne({
+        where: {
+          id: body.tour_id,
+          supplier_id: user.supplier_id,
+          active: true,
+        },
+        raw: true,
+      });
+
+      if (!tour) {
+        throw createError(400, 'INVALID_TOUR');
+      }
+
+      const customer = await models.Customers.create({
         ...body,
         supplier_id: user.supplier_id,
       });
 
-      return res.send(tour);
+      return res.send(customer);
     } catch (err) {
       return next(err);
     }
@@ -73,20 +86,33 @@ export default {
       const { body, user } = req;
       const { id } = req.params;
 
-      await ToursValidator.update(body);
+      await CustomersValidators.update(body);
 
-      const tour = await models.Tours.findOne({
+      const customer = await models.Customers.findOne({
         where: {
           id,
           supplier_id: user.supplier_id,
         },
       });
 
-      if (!tour) {
+      if (!customer) {
         throw createError(404, 'NOT_FOUND');
       }
 
-      const updated = await tour.update(body);
+      const tour = await models.Tours.findOne({
+        where: {
+          id: body.tour_id,
+          supplier_id: user.supplier_id,
+          active: true,
+        },
+        raw: true,
+      });
+
+      if (!tour) {
+        throw createError(400, 'INVALID_TOUR');
+      }
+
+      const updated = await customer.update(body);
 
       return res.send(updated);
     } catch (err) {
@@ -98,28 +124,28 @@ export default {
       const { user } = req;
       const { id } = req.params;
 
-      const tour = await models.Tours.findOne({
+      const customer = await models.Customers.findOne({
         where: {
           id,
           supplier_id: user.supplier_id,
         },
       });
 
-      if (!tour) {
+      if (!customer) {
         return res.send({ status: 1 });
       }
 
-      const customers = await models.Customers.count({
+      const customers = await models.Orders.count({
         where: {
-          tour_id: tour.id,
+          customer_id: customer.id,
         },
       });
 
       if (customers) {
-        throw createError(400, 'TOUR_CONTAINS_CUSTOMERS');
+        throw createError(400, 'CUSTOMER_CONTAINS_ORDERS');
       }
 
-      await tour.destroy();
+      await customer.destroy();
 
       return res.send({ status: 1 });
     } catch (err) {
