@@ -67,3 +67,4 @@ dist
 .test.env
 ecosystem.config.js
 coverage.lcov
+apidoc
