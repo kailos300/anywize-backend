@@ -118,6 +118,10 @@ export const createCustomer = async (supplier: Supplier, tour: Tour): Promise<Cu
     sms_notifications: false,
     email_notifications: true,
     active: true,
+    coordinates: {
+      type: 'Point',
+      coordinates: [11.000001, 4.14001],
+    },
   });
 
   return created.toJSON();

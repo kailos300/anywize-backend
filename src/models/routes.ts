@@ -1,10 +1,16 @@
+import { v1 } from 'uuid';
+
 export default function(sequelize, DataTypes) {
   const Routes = sequelize.define('Routes', {
     tour_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    route: {
+    uuid: {
+      type: DataTypes.STRING,
+      defaultValue: () => v1(),
+    },
+    pathway: {
       type: DataTypes.JSON,
       defaultValue: () => ([]),
     },
@@ -30,8 +36,10 @@ export default function(sequelize, DataTypes) {
 
 
   Routes.associate = (models: any) => {
-    Routes.belongsTo(models.Customers, { foreignKey: 'tour_id' });
+    Routes.belongsTo(models.Tours, { foreignKey: 'tour_id' });
     Routes.hasMany(models.Orders, { foreignKey: 'route_id' });
+    Routes.hasMany(models.Stops, { foreignKey: 'route_id' });
+    Routes.hasMany(models.DriversLocations, { foreignKey: 'route_id' });
   };
 
   return Routes;

@@ -30,6 +30,8 @@ const router = Router();
  *      phone: '123321312312',
  *      sms_notifications: false,
  *      email_notifications: true,
+ *      latitude: 10.00002,
+ *      longitude: 11.00004,
  *      active: true,
  *      updated_at: '2021-06-08T17:14:07.000Z',
  *      created_at: '2021-06-08T17:14:07.000Z',
@@ -109,6 +111,8 @@ router.get('/', userHasSupplier, CustomersCtrl.list);
  *        country: 'AR', // required
  *        email: 'bla@bla.com', // required
  *        phone: '123123123', // required
+ *        latitude: 10.00002, // required
+ *        longitude: 11.00004, // required
  *     }
  *
  * @apiSuccessExample Success-Response:
@@ -129,6 +133,8 @@ router.get('/', userHasSupplier, CustomersCtrl.list);
  *       sms_notifications: 0,
  *       email_notifications: 1,
  *       active: 1,
+ *       latitude: 10.00002,
+ *       longitude: 11.00004,
  *       updated_at: '2021-06-08T17:09:28.000Z',
  *       created_at: '2021-06-08T17:09:28.000Z'
  *     }
@@ -155,6 +161,8 @@ router.get('/', userHasSupplier, CustomersCtrl.list);
  *         country: '"country" is required',
  *         email: '"email" is required',
  *         phone: '"phone" is required',
+ *         latitude: '"latitude" is required',
+ *         longitude: '"longitude" is required',
  *       }
  *     }
  */
@@ -180,6 +188,8 @@ router.post('/', userHasSupplier, CustomersCtrl.create);
  *        country: 'AR', // required
  *        email: 'bla@bla.com', // required
  *        phone: '123123123', // required
+ *        latitude: 10.0002, // required
+ *        longitude: 11.00004, // required
  *     }
  *
  * @apiSuccessExample Success-Response:
@@ -200,6 +210,8 @@ router.post('/', userHasSupplier, CustomersCtrl.create);
  *       sms_notifications: 0,
  *       email_notifications: 1,
  *       active: 1,
+ *       latitude: 10.0002,
+ *       longitude: 11.00004,
  *       updated_at: '2021-06-08T17:09:28.000Z',
  *       created_at: '2021-06-08T17:09:28.000Z'
  *     }
@@ -229,6 +241,8 @@ router.post('/', userHasSupplier, CustomersCtrl.create);
  *         country: '"country" is required',
  *         email: '"email" is required',
  *         phone: '"phone" is required',
+ *         latitude: '"latitude" is required',
+ *         longitude: '"longitude" is required',
  *       }
  *     }
  */

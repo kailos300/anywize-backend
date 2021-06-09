@@ -1,5 +1,6 @@
 declare type User = {
   id: number;
+  supplier_id: number;
   name: string;
   surname: string;
   email: string;
@@ -65,6 +66,12 @@ declare type Customer = {
   active: boolean;
   updated_at: string;
   created_at: string;
+  coordinates: {
+    type: 'Point';
+    coordinates: [string, string];
+  };
+  latitude?: string;
+  longitude?: string;
 } & AddressAttributes;
 
 declare type Order = {
@@ -75,4 +82,15 @@ declare type Order = {
   description: string;
   delivered_at: string;
   number: string;
+};
+
+declare type Route = {
+  id: number;
+  tour_id: number;
+  uuid: string;
+  pathway: any[];
+  start_date: string;
+  end_date: string;
+  code: string;
+  password: string;
 };

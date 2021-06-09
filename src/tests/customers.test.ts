@@ -69,6 +69,8 @@ describe('Customers tests', () => {
       country: '"country" is required',
       email: '"email" is required',
       phone: '"phone" is required',
+      latitude: '"latitude" is required',
+      longitude: '"longitude" is required',
     });
 
     res = await request
@@ -85,6 +87,8 @@ describe('Customers tests', () => {
         country: 'AR',
         email: 'bla@bla.com',
         phone: '123123123',
+        latitude: 10.00001,
+        longitude: 11.00001,
       })
       .set('Authorization', `Bearer ${token}`);
 
@@ -105,6 +109,8 @@ describe('Customers tests', () => {
         country: 'AR',
         email: 'bla@bla.com',
         phone: '123123123',
+        latitude: 10.00001,
+        longitude: 11.00001,
       })
       .set('Authorization', `Bearer ${token}`);
 
@@ -140,6 +146,8 @@ describe('Customers tests', () => {
         country: 'AR',
         email: 'bla@bla.com',
         phone: '123123123',
+        latitude: 10.00001,
+        longitude: 11.00001,
       })
       .set('Authorization', `Bearer ${token}`);
 
@@ -159,6 +167,8 @@ describe('Customers tests', () => {
         country: 'AR',
         email: 'bla@bla.com',
         phone: '123123123',
+        latitude: 10.00001,
+        longitude: 11.00001,
       })
       .set('Authorization', `Bearer ${token}`);
 
@@ -179,6 +189,8 @@ describe('Customers tests', () => {
         country: 'AR',
         email: 'bla@bla.com',
         phone: '123123123',
+        latitude: 10.00001,
+        longitude: 11.00001,
       })
       .set('Authorization', `Bearer ${token}`);
 
@@ -236,6 +248,8 @@ describe('Customers tests', () => {
     expect(res.body.sms_notifications).equal(customer.sms_notifications);
     expect(res.body.email_notifications).equal(customer.email_notifications);
     expect(res.body.active).equal(customer.active);
+    expect(res.body.latitude).equal(customer.coordinates.coordinates[1]);
+    expect(res.body.longitude).equal(customer.coordinates.coordinates[0]);
     expect(res.body.Tour).eql({
       id: tour.id,
       name: tour.name,

@@ -202,7 +202,7 @@ describe('Orders tests', () => {
     expect(res.headers['x-total-count']).not.to.be.equal(null);
   });
 
-  it.only('GET /api/orders/:id should return a single order', async () => {
+  it('GET /api/orders/:id should return a single order', async () => {
     const { token } = await Helper.createUser({ supplier_id: supplier.id });
     const customer = await Helper.createCustomer(supplier, tour);
     const order = await Helper.createOrder(supplier, customer);
@@ -217,7 +217,7 @@ describe('Orders tests', () => {
       .get(`/api/orders/${order.id}`)
       .set('Authorization', `Bearer ${token}`);
 
-    expect(res.status).equal(200);console.log(JSON.stringify(res.body))
+    expect(res.status).equal(200);
     expect(res.body).to.have.property('supplier_id');
     expect(res.body).to.have.property('customer_id');
     expect(res.body).to.have.property('route_id');

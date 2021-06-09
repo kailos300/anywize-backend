@@ -33,6 +33,13 @@ export default function(sequelize, DataTypes) {
     country: {
       type: DataTypes.STRING,
     },
+    coordinates: {
+      type: DataTypes.GEOMETRY('POINT'),
+      defaultValue: () => ({
+        type: 'Point',
+        coordinates: [0, 0],
+      }),
+    },
     email: {
       type: DataTypes.STRING,
     },
@@ -59,6 +66,26 @@ export default function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       defaultValue: () => new Date(),
     },
+    latitude: {
+      type: new DataTypes.VIRTUAL(DataTypes.STRING, ['coordinates']),
+      get: function () {
+        if (!this.get('coordinates')) {
+          return null;
+        }
+
+        return this.get('coordinates').coordinates[1];
+      },
+    },
+    longitude: {
+      type: new DataTypes.VIRTUAL(DataTypes.STRING, ['coordinates']),
+      get: function () {
+        if (!this.get('coordinates')) {
+          return null;
+        }
+
+        return this.get('coordinates').coordinates[0];
+      },
+    },
   }, {
     timestamps: false,
     tableName: 'customers',
@@ -69,6 +96,7 @@ export default function(sequelize, DataTypes) {
   Customers.associate = (models: any) => {
     Customers.belongsTo(models.Suppliers, { foreignKey: 'supplier_id' });
     Customers.belongsTo(models.Tours, { foreignKey: 'tour_id' });
+    Customers.hasMany(models.Orders, { foreignKey: 'customer_id' });
   };
 
   return Customers;

@@ -21,6 +21,14 @@ export function getJWT(user: User) {
   });
 }
 
+export function getDriverJWT(route: Route): string {
+  return jwt.sign({
+    uuid: route.uuid,
+  }, SECRET, {
+    expiresIn: 60 * 60 * 12,
+  });
+}
+
 export function getPublicInfo(user: User): PublicUser {
   return omit(user, [
     'created_at',

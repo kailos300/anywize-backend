@@ -22,7 +22,7 @@ export default {
       res.set('x-total-count', count);
 
       return res.send(rows);
-    } catch (err) {console.log(err)
+    } catch (err) {
       return next(err);
     }
   },

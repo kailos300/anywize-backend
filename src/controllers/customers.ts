@@ -18,6 +18,18 @@ export default {
           supplier_id: user.supplier_id,
         },
         order: [['id', 'DESC']],
+        attributes: [
+          'id',
+          'tour_id',
+          'tour_position',
+          'name',
+          'alias',
+          'street',
+          'street_number',
+          'city',
+          'zipcode',
+          'country',
+        ],
       });
 
       res.set('x-total-count', count);
@@ -74,6 +86,10 @@ export default {
       const customer = await models.Customers.create({
         ...body,
         supplier_id: user.supplier_id,
+        coordinates: {
+          type: 'Point',
+          coordinates: [body.longitude, body.latitude],
+        },
       });
 
       return res.send(customer);
@@ -112,7 +128,13 @@ export default {
         throw createError(400, 'INVALID_TOUR');
       }
 
-      const updated = await customer.update(body);
+      const updated = await customer.update({
+        ...body,
+        coordinates: {
+          type: 'Point',
+          coordinates: [body.longitude, body.latitude],
+        },
+      });
 
       return res.send(updated);
     } catch (err) {
