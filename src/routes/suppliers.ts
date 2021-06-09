@@ -13,6 +13,8 @@ const router = Router();
  * @apiParamExample {json} Request-Example:
  *     GET /api/admin/suppliers?limit=10&offset=20
  *
+ *    Returns a header `x-total-count` with the total number of records for pagination
+ *
  * @apiSuccessExample Success-Response:
  *    [{
  *      id: 1,

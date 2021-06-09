@@ -36,6 +36,10 @@ export const createSupplier = async (forceNew = false): Promise<Supplier> => {
     active: true,
   });
 
+  if (forceNew) {
+    return created.toJSON();
+  }
+
   supplier = created.toJSON();
 
   return supplier;
@@ -119,6 +123,18 @@ export const createCustomer = async (supplier: Supplier, tour: Tour): Promise<Cu
   return created.toJSON();
 };
 
+export const createOrder = async (supplier: Supplier, customer: Customer, data = {}): Promise<Order> => {
+  const created = await models.Orders.create({
+    customer_id: customer.id,
+    supplier_id: supplier.id,
+    description: 'This is the order description for ' + customer.name,
+    number: 'number',
+    ...data,
+  });
+
+  return created.toJSON();
+};
+
 export default {
   request,
   delay,
@@ -128,4 +144,5 @@ export default {
   createTransportAgent,
   createTour,
   createCustomer,
+  createOrder,
 };

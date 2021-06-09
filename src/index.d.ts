@@ -66,3 +66,13 @@ declare type Customer = {
   updated_at: string;
   created_at: string;
 } & AddressAttributes;
+
+declare type Order = {
+  id: number;
+  supplier_id: number;
+  customer_id: number;
+  route_id?: number;
+  description: string;
+  delivered_at: string;
+  number: string;
+};
