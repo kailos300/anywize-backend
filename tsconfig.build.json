@@ -22,6 +22,7 @@
     "skipLibCheck": true
   },
   "exclude": [
+    "apidoc",
     "node_modules",
     "postgrator",
     "tasks",
