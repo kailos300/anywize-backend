@@ -148,6 +148,7 @@ export const createRoute = async (
   transportAgent: TransportAgent;
   tour: Tour;
   customers: { customer: Customer; orders: Order[] }[];
+  token: string;
 }> => {
   const transportAgent = await createTransportAgent();
   const tour = await createTour(supplier, transportAgent);
@@ -178,6 +179,7 @@ export const createRoute = async (
     transportAgent,
     tour,
     customers,
+    token: UsersLogic.getDriverJWT(route),
   };
 };
 

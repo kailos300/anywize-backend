@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import Sequelize from 'sequelize';
 import createError from 'http-errors';
 import { DateTime } from 'luxon';
 import RoutesLogic from '../logic/routes';
@@ -86,7 +87,7 @@ export default {
         return res.send({ status: 1 });
       }
 
-      await route.update({ start_date: DateTime.now().toISOString() });
+      await route.update({ start_date: DateTime.now().toISO() });
 
       return res.send({ status: 1 });
     } catch (err) {
@@ -98,7 +99,12 @@ export default {
       const { uuid } = req.route;
 
       const route = await models.Routes.findOne({
-        where: { uuid },
+        where: {
+          uuid,
+          start_date: {
+            [Sequelize.Op.not]: null,
+          },
+        },
         attributes: ['id', 'start_date', 'end_date'],
       });
 
@@ -110,7 +116,7 @@ export default {
         throw createError(400, 'ROUTE_ALREADY_ENDED');
       }
 
-      await route.update({ end_date: DateTime.now().toISOString() });
+      await route.update({ end_date: DateTime.now().toISO() });
 
       return res.send({ status: 1 });
     } catch (err) {
