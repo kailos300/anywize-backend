@@ -31,19 +31,3 @@ export default function validate(data, schema) {
     throw new ValidationError(errors);
   }
 }
-
-export function validateSync(data, schema) {
-  const result = schema.validate(data, { abortEarly: false });
-  if (!result.error) {
-    return {};
-  }
-
-  return result.error.details.reduce((acc, cur) => {
-
-    const key = cur.path.join('.');
-
-    acc[key] = cur.message;
-
-    return acc;
-  }, {});
-}

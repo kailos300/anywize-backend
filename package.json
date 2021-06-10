@@ -13,6 +13,7 @@
     "clean": "rimraf dist",
     "build": "npm run clean && mkdir -p dist && etsc --config=esbuild.config.js && npm run apidoc",
     "test": "yarn truncateTestDatabase && yarn dbMigrateTest && NODE_ENV=test ts-mocha --require dotenv/config dotenv_config_path=.test.env --require ./src/index.ts 'src/tests/**/*.{js,ts}' -t 70000 --exit",
+    "test:coverage": "yarn truncateTestDatabase && yarn dbMigrateTest && NODE_ENV=test nyc ts-mocha --require dotenv/config dotenv_config_path=.test.env --require ./src/index.ts 'src/tests/**/*.{js,ts}' -t 70000 --exit",
     "dbMigrateTest": "NODE_ENV=test node -r dotenv/config -e 'require(\"./postgrator/postgrator.js\").migrate()' dotenv_config_path=.test.env",
     "truncateTestDatabase": "NODE_ENV=test node -r dotenv/config -e 'require(\"./postgrator/postgrator.js\").truncateDatabase()' dotenv_config_path=.test.env",
     "apidoc": "apidoc -i \"./src/routes\" -o apidoc/"
@@ -23,7 +24,6 @@
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
-    "crypto-random-string": "^4.0.0",
     "debug": "^4.3.0",
     "express": "^4.17.1",
     "form-data": "^3.0.0",
@@ -39,6 +39,7 @@
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "postgrator": "^4.1.1",
+    "randomstring": "^1.2.1",
     "rimraf": "^3.0.2",
     "sequelize": "^6.6.2",
     "uuid": "^8.3.2"
@@ -65,7 +66,7 @@
     "mocha": "^8.3.2",
     "nock": "^13.0.5",
     "nodemon": "^2.0.3",
-    "nyc": "^15.0.1",
+    "nyc": "^15.1.0",
     "sinon": "^9.0.2",
     "supertest": "^6.1.3",
     "ts-mocha": "^8.0.0",
@@ -80,5 +81,13 @@
     "name": "Anywize",
     "description": "Anywize API",
     "sampleUrl": null
+  },
+  "nyc": {
+    "reporter": [
+      "lcov"
+    ],
+    "exclude": [
+      "src/tests/*.ts"
+    ]
   }
 }

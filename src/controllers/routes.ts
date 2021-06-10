@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import createError from 'http-errors';
+import Sequelize from 'sequelize';
 import models from '../models';
 import RoutesLogic from '../logic/routes';
 import RoutesValidators from '../validators/routes';
@@ -14,12 +15,14 @@ export default {
         limit: parseInt(limit || 20, 10),
         offset: parseInt(offset || 0, 10),
         raw: true,
+        nest: true,
         where: {
-          active: true,
-          tour_id: models.sequelize.literal(`(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`),
+          tour_id: {
+            [Sequelize.Op.in]: models.sequelize.literal(`(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`),
+          },
         },
         order: [['id', 'DESC']],
-        attributes: ['id', 'start_time', 'end_time'],
+        attributes: ['id', 'start_date', 'end_date'],
         include: [{
           model: models.Tours,
           attributes: ['id', 'name'],
@@ -39,32 +42,12 @@ export default {
       const { id } = req.params;
       const { user } = req;
 
-      const route = await models.Routes.findOne({
-        where: {
-          id,
-          tour_id: models.sequelize.literal(`(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`),
+      const route = await RoutesLogic.get({
+        id,
+        tour_id: {
+          [Sequelize.Op.in]: models.sequelize.literal(`(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`),
         },
-        include: [{
-          model: models.Tours,
-          include: [{
-            model: models.TransportAgents,
-          }],
-        }, {
-          model: models.Orders,
-          required: false,
-        }, {
-          model: models.Stops,
-          required: false,
-        }, {
-          model: models.DriversLocations,
-          attributes: ['location', 'created_at'],
-          required: false,
-        }],
       });
-
-      if (!route) {
-        throw createError(404, 'NOT_FOUND');
-      }
 
       return res.send(route);
     } catch (err) {
@@ -92,7 +75,9 @@ export default {
       const route = await models.Routes.findOne({
         where: {
           id,
-          tour_id: models.sequelize.literal(`(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`),
+          tour_id: {
+            [Sequelize.Op.in]: models.sequelize.literal(`(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`),
+          },
         },
       });
 
@@ -104,6 +89,7 @@ export default {
         throw createError(400, 'ROUTE_STARTED');
       }
 
+      await RoutesLogic.unlinkOrders(route);
       await route.destroy();
 
       return res.send({ status: 1 });

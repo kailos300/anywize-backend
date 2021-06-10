@@ -13,6 +13,8 @@ import tours from './tours';
 import customers from './customers';
 import transportAgents from './transport-agents';
 import orders from './orders';
+import routes from './routes';
+import drivers from './drivers';
 
 router.get('/ping', async (req, res, next) => {
   try {
@@ -31,5 +33,7 @@ router.use('/api/tours', isAuthenticated, tours);
 router.use('/api/customers', isAuthenticated, customers);
 router.use('/api/transport-agents', isAuthenticated, transportAgents);
 router.use('/api/orders', isAuthenticated, orders);
+router.use('/api/routes', isAuthenticated, routes);
+router.use('/api/drivers', drivers);
 
 export default router;

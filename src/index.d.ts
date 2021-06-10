@@ -84,13 +84,28 @@ declare type Order = {
   number: string;
 };
 
+declare type CustomerWithOrders = Omit<
+  Customer, 'active' | 'created_at' | 'updated_at' | 'sms_notifications' | 'email_notifications' | 'supplier_id'
+> & {
+  Orders: Order[];
+};
+
 declare type Route = {
   id: number;
   tour_id: number;
   uuid: string;
-  pathway: any[];
+  pathway: CustomerWithOrders[];
   start_date: string;
   end_date: string;
   code: string;
   password: string;
+};
+
+declare type FullRoute = Route & {
+  Tour: Tour & {
+    TransportAgent: TransportAgent;
+  };
+  Orders: Pick<Order, 'id' | 'delivered_at'>[];
+  Stops: any[];
+  DriversLocations: any[];
 };

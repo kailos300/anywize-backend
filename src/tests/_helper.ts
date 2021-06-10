@@ -5,6 +5,7 @@ import _ from 'lodash';
 import getenv from 'getenv';
 import models from '../models';
 import * as UsersLogic from '../logic/users';
+import RoutesLogic from '../logic/routes';
 
 const PORT = getenv('PORT');
 
@@ -101,7 +102,7 @@ export const createTour = async (supplier: Supplier, transportAgent: TransportAg
   return created.toJSON();
 };
 
-export const createCustomer = async (supplier: Supplier, tour: Tour): Promise<Customer> => {
+export const createCustomer = async (supplier: Supplier, tour: Tour, data = {}): Promise<Customer> => {
   const created = await models.Customers.create({
     supplier_id: supplier.id,
     tour_id: tour.id,
@@ -122,6 +123,7 @@ export const createCustomer = async (supplier: Supplier, tour: Tour): Promise<Cu
       type: 'Point',
       coordinates: [11.000001, 4.14001],
     },
+    ...data,
   });
 
   return created.toJSON();
@@ -139,6 +141,46 @@ export const createOrder = async (supplier: Supplier, customer: Customer, data =
   return created.toJSON();
 };
 
+export const createRoute = async (
+  user: User, supplier: Supplier, _customers: number[]
+): Promise<{
+  route: Route;
+  transportAgent: TransportAgent;
+  tour: Tour;
+  customers: { customer: Customer; orders: Order[] }[];
+}> => {
+  const transportAgent = await createTransportAgent();
+  const tour = await createTour(supplier, transportAgent);
+  const order_ids = [];
+  const customers = await Promise.all(
+    _customers.map(async (numberOfOrders) => {
+      const customer = await createCustomer(supplier, tour);
+      let i = 0;
+      let orders = [];
+
+      while (i < numberOfOrders) {
+        const order = await createOrder(supplier, customer);
+
+        orders.push(order);
+        order_ids.push(order.id);
+
+        i += 1;
+      }
+
+      return { customer, orders };
+    })
+  );
+
+  const route = await RoutesLogic.create({ order_ids, tour_id: tour.id }, user);
+
+  return {
+    route,
+    transportAgent,
+    tour,
+    customers,
+  };
+};
+
 export default {
   request,
   delay,
@@ -149,4 +191,5 @@ export default {
   createTour,
   createCustomer,
   createOrder,
+  createRoute,
 };

@@ -16,6 +16,10 @@ export default (passport) => {
   };
 
   passport.use(new Strategy(options, function(jwt_payload, done) {
+    if (!jwt_payload.id) {
+      return done(null, false);
+    }
+
     return models.Users.findOne({
       where: {
         id: jwt_payload.id,

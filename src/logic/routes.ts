@@ -1,16 +1,46 @@
 import createError from 'http-errors';
 import orderBy from 'lodash/orderBy';
-import cryptoRandomString from 'crypto-random-string';
+import randomString from 'randomstring';
 import models from '../models';
 
-type CustomerWithOrders = Omit<
-  Customer, 'active' | 'created_at' | 'updated_at' | 'sms_notifications' | 'email_notifications' | 'supplier_id'
-> & {
-  Orders: Order[];
-};
 
 export default {
-  create: async (body: { order_ids: number[], tour_id: number }, user: User): Promise<any> => {
+  get: async (where: any): Promise<FullRoute> => {
+    const route = await models.Routes.findOne({
+      where,
+      include: [{
+        model: models.Tours,
+        include: [{
+          model: models.TransportAgents,
+        }],
+      }, {
+        model: models.Orders,
+        required: false,
+        attributes: ['id', 'delivered_at'],
+      }, {
+        model: models.Stops,
+        required: false,
+      }, {
+        model: models.DriversLocations,
+        attributes: ['location', 'created_at'],
+        required: false,
+      }],
+    });
+
+    if (!route) {
+      throw createError(404, 'NOT_FOUND');
+    }
+
+    return route.toJSON();
+  },
+  unlinkOrders: async (route: Route): Promise<void> => {
+    await models.Orders.update({
+      route_id: null,
+    }, {
+      where: { route_id: route.id },
+    });
+  },
+  create: async (body: { order_ids: number[], tour_id: number }, user: User): Promise<Route> => {
     const customers = await models.Customers.findAll({
       where: {
         tour_id: body.tour_id,
@@ -24,8 +54,12 @@ export default {
         model: models.Orders,
         where: {
           id: body.order_ids,
+          route_id: null,
         },
         required: true,
+        attributes: {
+          exclude: ['route_id', 'delivered_at'],
+        },
       }],
     });
 
@@ -49,8 +83,8 @@ export default {
     const route = await models.Routes.create({
       tour_id: body.tour_id,
       pathway: ordered,
-      code: cryptoRandomString({ length: 6, type: 'distinguishable' }),
-      password: cryptoRandomString({ length: 4, type: 'numeric' }),
+      code: randomString.generate({ length: 4, charset: 'alphabetic', capitalization: 'uppercase' }),
+      password: randomString.generate({ length: 4, charset: 'numeric' }),
     });
 
     await models.Orders.update({

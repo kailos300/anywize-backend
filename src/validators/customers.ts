@@ -13,9 +13,9 @@ const CreateSchema = Joi.object().keys({
   country: Joi.string().min(2).max(2).required(),
   email: Joi.string().email().required(),
   phone: Joi.string().required(),
-  sms_notifications: Joi.boolean().truthy(1, '1').falsy(1, '1').optional(),
-  email_notifications: Joi.boolean().truthy(1, '1').falsy(1, '1').optional(),
-  active: Joi.boolean().truthy(1, '1').falsy(1, '1').optional(),
+  sms_notifications: Joi.boolean().truthy(1, '1').falsy(0, '0').optional(),
+  email_notifications: Joi.boolean().truthy(1, '1').falsy(0, '0').optional(),
+  active: Joi.boolean().truthy(1, '1').falsy(0, '0').optional(),
   latitude: Joi.number().precision(8).required(),
   longitude: Joi.number().precision(8).required(),
 });
