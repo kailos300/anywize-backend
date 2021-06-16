@@ -53,79 +53,39 @@ router.post('/login', DriversCtrl.authenticate);
  *      "id": 4,
  *      "tour_id": 3,
  *      "uuid": "3f1943d0-c9eb-11eb-9585-374befa75bfc",
- *      "pathway": [
- *        {
- *          "id": 7,
- *          "city": "City 2",
- *          "name": "Bruen, Halvorson and Carter",
- *          "alias": "Klein Inc",
- *          "email": "macy61@yahoo.com",
- *          "phone": "123321312312",
- *          "Orders": [
- *            {
- *              "id": 8,
- *              "number": "number",
- *              "customer_id": 7,
- *              "description": "This is the order description for Bruen, Halvorson and Carter",
- *              "supplier_id": 1
- *            }
- *          ],
- *          "street": "st",
- *          "country": "BR",
- *          "tour_id": 3,
- *          "zipcode": "123",
- *          "latitude": 4.14001,
- *          "longitude": 11.000001,
- *          "coordinates": {
- *            "type": "Point",
- *            "coordinates": [
- *              11.000001,
- *              4.14001
- *            ]
- *          },
- *          "street_number": "123123",
- *          "tour_position": 1
+ *      "pathway": {
+ *        "id": 7,
+ *        "city": "City 2",
+ *        "name": "Bruen, Halvorson and Carter",
+ *        "alias": "Klein Inc",
+ *        "email": "macy61@yahoo.com",
+ *        "phone": "123321312312",
+ *        "Orders": [
+ *          {
+ *            "id": 8,
+ *            "number": "number",
+ *            "customer_id": 7,
+ *            "description": "This is the order description for Bruen, Halvorson and Carter",
+ *            "supplier_id": 1
+ *            "delivered_at": null,
+ *          }
+ *        ],
+ *        "street": "st",
+ *        "country": "BR",
+ *        "tour_id": 3,
+ *        "zipcode": "123",
+ *        "latitude": 4.14001,
+ *        "longitude": 11.000001,
+ *        "coordinates": {
+ *          "type": "Point",
+ *          "coordinates": [
+ *            11.000001,
+ *            4.14001
+ *          ]
  *        },
- *        {
- *          "id": 8,
- *          "city": "City 2",
- *          "name": "Sipes - Okuneva",
- *          "alias": "Thompson, Berge and Stark",
- *          "email": "madisyn.ullrich86@hotmail.com",
- *          "phone": "123321312312",
- *          "Orders": [
- *            {
- *              "id": 9,
- *              "number": "number",
- *              "customer_id": 8,
- *              "description": "This is the order description for Sipes - Okuneva",
- *              "supplier_id": 1
- *            },
- *            {
- *              "id": 10,
- *              "number": "number",
- *              "customer_id": 8,
- *              "description": "This is the order description for Sipes - Okuneva",
- *              "supplier_id": 1
- *            }
- *          ],
- *          "street": "st",
- *          "country": "BR",
- *          "tour_id": 3,
- *          "zipcode": "123",
- *          "latitude": 4.14001,
- *          "longitude": 11.000001,
- *          "coordinates": {
- *            "type": "Point",
- *            "coordinates": [
- *              11.000001,
- *              4.14001
- *            ]
- *          },
- *          "street_number": "123123",
- *          "tour_position": 1
- *        },
- *      ],
+ *        "street_number": "123123",
+ *        "tour_position": 1
+ *      },
  *      "start_date": null,
  *      "end_date": null,
  *      "code": "ZOIBDM",
@@ -133,38 +93,14 @@ router.post('/login', DriversCtrl.authenticate);
  *      "Tour": {
  *        "id": 3,
  *        "supplier_id": 1,
- *        "transport_agent_id": 1,
  *        "name": "Tour: Considine, Cassin and Zulauf",
  *        "description": "this is the tour 1",
- *        "active": true,
- *        "updated_at": "2021-06-10T12:56:17.000Z",
- *        "created_at": "2021-06-10T12:56:17.000Z",
  *        "TransportAgent": {
  *          "id": 1,
  *          "name": "Name - Breitenberg and Sons",
  *          "alias": "Alias - Olson - Breitenberg",
- *          "street": "street",
- *          "street_number": "123123",
- *          "city": "City",
- *          "country": "AR"
  *        }
- *      },
- *      "Orders": [
- *        {
- *          "id": 8,
- *          "delivered_at": null
- *        },
- *        {
- *          "id": 9,
- *          "delivered_at": null
- *        },
- *        {
- *          "id": 10,
- *          "delivered_at": null
- *        }
- *      ],
- *      "Stops": [],
- *      "DriversLocations": []
+ *      }
  *    }
  *
  * @apiErrorExample Unauthenticated:
@@ -215,7 +151,8 @@ router.put('/route/end', isDriverAuthenticated, DriversCtrl.endRoute);
  * @api {post} /api/drivers/route/stop Create stop
  * @apiName Create stop
  * @apiGroup Drivers
- * @apiDescription Creates a stop in the route
+ * @apiDescription Creates a stop in the route. The response is the route after the current stop is completed
+ * having the `pathway` object updated to the next section
  *
  * @apiParamExample {json} Request-Example:
  *     {
@@ -231,9 +168,59 @@ router.put('/route/end', isDriverAuthenticated, DriversCtrl.endRoute);
  *     }
  *
  * @apiSuccessExample Success-Response:
- *     {
- *       "status": 1
- *     }
+ *    {
+ *      "id": 4,
+ *      "tour_id": 3,
+ *      "uuid": "3f1943d0-c9eb-11eb-9585-374befa75bfc",
+ *      "pathway": {
+ *        "id": 7,
+ *        "city": "City 2",
+ *        "name": "Bruen, Halvorson and Carter",
+ *        "alias": "Klein Inc",
+ *        "email": "macy61@yahoo.com",
+ *        "phone": "123321312312",
+ *        "Orders": [
+ *          {
+ *            "id": 8,
+ *            "number": "number",
+ *            "customer_id": 7,
+ *            "description": "This is the order description for Bruen, Halvorson and Carter",
+ *            "supplier_id": 1
+ *            "delivered_at": null,
+ *          }
+ *        ],
+ *        "street": "st",
+ *        "country": "BR",
+ *        "tour_id": 3,
+ *        "zipcode": "123",
+ *        "latitude": 4.14001,
+ *        "longitude": 11.000001,
+ *        "coordinates": {
+ *          "type": "Point",
+ *          "coordinates": [
+ *            11.000001,
+ *            4.14001
+ *          ]
+ *        },
+ *        "street_number": "123123",
+ *        "tour_position": 1
+ *      },
+ *      "start_date": null,
+ *      "end_date": null,
+ *      "code": "ZOIBDM",
+ *      "password": "8756",
+ *      "Tour": {
+ *        "id": 3,
+ *        "supplier_id": 1,
+ *        "name": "Tour: Considine, Cassin and Zulauf",
+ *        "description": "this is the tour 1",
+ *        "TransportAgent": {
+ *          "id": 1,
+ *          "name": "Name - Breitenberg and Sons",
+ *          "alias": "Alias - Olson - Breitenberg",
+ *        }
+ *      }
+ *    }
  *
  * @apiErrorExample Unauthenticated:
  *     HTTP/1.1 401

@@ -34,18 +34,20 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         throw createError(401);
       }
 
-      const route = await models.Routes.count({
+      const route = await models.Routes.findOne({
         where: {
           uuid: payload.uuid,
           end_date: null,
         },
+        attributes: ['id', 'uuid'],
+        raw: true,
       });
 
       if (!route) {
         throw createError(401);
       }
 
-      req.route = { uuid: payload.uuid };
+      req.route = { id: route.id, uuid: route.uuid };
 
       return next();
     } catch (err) {

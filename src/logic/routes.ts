@@ -1,10 +1,77 @@
 import createError from 'http-errors';
 import orderBy from 'lodash/orderBy';
 import randomString from 'randomstring';
+import { DateTime } from 'luxon';
 import models from '../models';
 
-
 export default {
+  markOrdersAsDelivered: async (uuid: string, customer_id: number): Promise<any> => {
+    const route = await models.Routes.findOne({
+      where: { uuid },
+      attributes: ['id', 'start_date', 'end_date', 'pathway'],
+    });
+
+    const { pathway } = route;
+
+    const index = pathway.findIndex((p) => p.id === customer_id);
+    const now = DateTime.now().toISO();
+
+    if (index === -1) {
+      throw new Error('CUSTOMER_NOT_FOUND_IN_ROUTE');
+    }
+
+    const orders = pathway[index].Orders;
+    const ids = orders.map((o) => o.id);
+
+    await models.Orders.update({
+      delivered_at: now,
+    }, {
+      where: { id: ids },
+    });
+
+    const newPathway = [
+      ...pathway.slice(0, index),
+      {
+        ...pathway[index],
+        Orders: pathway[index].Orders.map((o) => ({
+          ...o,
+          delivered_at: now,
+        })),
+      },
+      ...pathway.slice(index + 1),
+    ];
+
+    await route.update({ pathway: newPathway });
+  },
+  getRouteForDriver: async (where: any): Promise<RouteForDriver> => {
+    const record = await models.Routes.findOne({
+      where,
+      include: [{
+        model: models.Tours,
+        attributes: ['id', 'supplier_id', 'name', 'description'],
+        include: [{
+          model: models.TransportAgents,
+          attributes: ['id', 'alias', 'name'],
+        }],
+      }, {
+        model: models.Stops,
+        required: false,
+      }],
+    });
+
+
+    const route: FullRoute = record.toJSON();
+    const { pathway, Stops, ...rest } = route;
+    const visitedCustomersIds = Stops.map((s) => s.customer_id);
+    const filteredPathway = route.pathway.filter((path) => {
+      return !visitedCustomersIds.includes(path.id);
+    });
+
+    return {
+      ...rest,
+      pathway: filteredPathway.length ? filteredPathway[0] : null,
+    };
+  },
   get: async (where: any): Promise<FullRoute> => {
     const route = await models.Routes.findOne({
       where,
@@ -58,7 +125,7 @@ export default {
         },
         required: true,
         attributes: {
-          exclude: ['route_id', 'delivered_at'],
+          exclude: ['route_id'],
         },
       }],
     });

@@ -40,7 +40,7 @@ export default {
     try {
       const { uuid } = req.route;
 
-      const route = await RoutesLogic.get({
+      const route = await RoutesLogic.getRouteForDriver({
         uuid,
       });
 
@@ -51,25 +51,25 @@ export default {
   },
   createStop: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { uuid } = req.route;
+      const { uuid, id } = req.route;
       const { body } = req;
 
       await DriversValidators.createStop(body);
 
-      const route = await models.Routes.findOne({
-        where: { uuid },
-        attributes: ['id', 'start_date', 'end_date'],
-      });
-
       await models.Stops.create({
         ...body,
+        route_id: id,
         location: {
           type: 'Point',
           coordinates: [body.longitude, body.latitude],
         },
       });
 
-      return res.send({ status: 1 });
+      await RoutesLogic.markOrdersAsDelivered(uuid, parseInt(body.customer_id, 10));
+
+      const route = await RoutesLogic.getRouteForDriver({ uuid });
+
+      return res.send(route);
     } catch (err) {
       return next(err);
     }

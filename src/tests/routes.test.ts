@@ -117,6 +117,7 @@ describe('Routes tests', () => {
           customer_id: order.customer_id,
           description: order.description,
           number: order.number,
+          delivered_at: null,
         },
       ],
     }]);
@@ -155,6 +156,7 @@ describe('Routes tests', () => {
           customer_id: orderFour.customer_id,
           description: orderFour.description,
           number: orderFour.number,
+          delivered_at: null,
         },
       ],
     });
@@ -180,12 +182,14 @@ describe('Routes tests', () => {
         customer_id: orderTwo.customer_id,
         description: orderTwo.description,
         number: orderTwo.number,
+        delivered_at: null,
       }, {
         id: orderThree.id,
         supplier_id: orderThree.supplier_id,
         customer_id: orderThree.customer_id,
         description: orderThree.description,
         number: orderThree.number,
+        delivered_at: null,
       }],
     });
 

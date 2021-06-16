@@ -101,11 +101,22 @@ declare type Route = {
   password: string;
 };
 
+declare type Stop = {
+  customer_id: number;
+};
+
 declare type FullRoute = Route & {
   Tour: Tour & {
     TransportAgent: TransportAgent;
   };
   Orders: Pick<Order, 'id' | 'delivered_at'>[];
-  Stops: any[];
+  Stops: Stop[];
   DriversLocations: any[];
+};
+
+declare type RouteForDriver = Omit<Route, 'pathway'> & {
+  Tour: Pick<Tour, 'id', 'name', 'supplier_id', 'description'> & {
+    TransportAgent: Pick<TransportAgent, 'id', 'name', 'alias'>;
+  };
+  pathway: CustomerWithOrders;
 };

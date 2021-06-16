@@ -112,8 +112,7 @@ describe('Drivers tests', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.status).equal(200);
-    expect(res.body.pathway.length).equal(1);
-    expect(res.body.pathway[0]).eql({
+    expect(res.body.pathway).eql({
       latitude: customers[0].customer.coordinates.coordinates[1],
       longitude: customers[0].customer.coordinates.coordinates[0],
       id: customers[0].customer.id,
@@ -136,6 +135,7 @@ describe('Drivers tests', () => {
           customer_id: customers[0].orders[0].customer_id,
           description: customers[0].orders[0].description,
           number: customers[0].orders[0].number,
+          delivered_at: null,
         },
         {
           id: customers[0].orders[1].id,
@@ -143,6 +143,7 @@ describe('Drivers tests', () => {
           customer_id: customers[0].orders[1].customer_id,
           description: customers[0].orders[1].description,
           number: customers[0].orders[1].number,
+          delivered_at: null,
         },
         {
           id: customers[0].orders[2].id,
@@ -150,13 +151,11 @@ describe('Drivers tests', () => {
           customer_id: customers[0].orders[2].customer_id,
           description: customers[0].orders[2].description,
           number: customers[0].orders[2].number,
+          delivered_at: null,
         },
       ],
     });
     expect(res.body.id).equal(route.id);
-    expect(res.body.Stops).to.be.an('array');
-    expect(res.body.DriversLocations).to.be.an('array');
-    expect(res.body.Orders.length).equal(3);
     expect(res.body.Tour.id).equal(newTour.id);
     expect(res.body.Tour.TransportAgent.id).equal(newTransportAgent.id);
   });
@@ -219,5 +218,132 @@ describe('Drivers tests', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.status).equal(401);
+  });
+
+  it('POST /api/drivers/route/stop should create a stop, mark the route section as started and return the next pathway', async () => {
+    const { user } = await Helper.createUser({ supplier_id: supplier.id });
+    const {
+      route,
+      token,
+      customers,
+    } = await Helper.createRoute(user, supplier, [3, 1, 1]);
+
+    let res = await request
+      .put('/api/drivers/route/start')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(200);
+
+    res = await request
+      .get('/api/drivers/route')
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.status).equal(200);
+    expect(res.body.pathway.id).equal(customers[0].customer.id);
+
+    res = await request
+      .post('/api/drivers/route/stop')
+      .send({
+        customer_id: customers[0].customer.id,
+        time: (new Date()).toISOString(),
+        customer_signed: true,
+        latitude: 10,
+        longitude: 11,
+        meet_customer: true,
+        reason: null,
+        driver_name: 'John',
+        goods_back: false,
+      })
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(200);
+    expect(res.body.pathway.id).equal(customers[1].customer.id);
+    expect(res.body.pathway.Orders.length).equal(1);
+
+    // orders from the first customer should be delivered
+    let orders = await models.Orders.findAll({
+      where: {
+        customer_id: customers[0].customer.id,
+      },
+      raw: true,
+    });
+    expect(orders.length).equal(3);
+    orders.forEach((o) => expect(o.delivered_at).not.to.be.equal(null));
+
+    let dbRoute = await models.Routes.findByPk(route.id);
+    expect(dbRoute.pathway[0].id).equal(customers[0].customer.id);
+    dbRoute.pathway[0].Orders.forEach((o) => expect(o.delivered_at).not.to.be.equal(null));
+    dbRoute.pathway[1].Orders.forEach((o) => expect(o.delivered_at).equal(null));
+    dbRoute.pathway[2].Orders.forEach((o) => expect(o.delivered_at).equal(null));
+
+    // second stop
+    res = await request
+      .post('/api/drivers/route/stop')
+      .send({
+        customer_id: customers[1].customer.id,
+        time: (new Date()).toISOString(),
+        customer_signed: true,
+        latitude: 10,
+        longitude: 11,
+        meet_customer: true,
+        reason: null,
+        driver_name: 'John',
+        goods_back: false,
+      })
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(200);
+    expect(res.body.pathway.id).equal(customers[2].customer.id);
+    expect(res.body.pathway.Orders.length).equal(1);
+
+    // orders from the second customer should be delivered
+    orders = await models.Orders.findAll({
+      where: {
+        customer_id: customers[1].customer.id,
+      },
+      raw: true,
+    });
+    expect(orders.length).equal(1);
+    orders.forEach((o) => expect(o.delivered_at).not.to.be.equal(null));
+
+    dbRoute = await models.Routes.findByPk(route.id);
+    expect(dbRoute.pathway[0].id).equal(customers[0].customer.id);
+    dbRoute.pathway[0].Orders.forEach((o) => expect(o.delivered_at).not.to.be.equal(null));
+    dbRoute.pathway[1].Orders.forEach((o) => expect(o.delivered_at).not.to.be.equal(null));
+    dbRoute.pathway[2].Orders.forEach((o) => expect(o.delivered_at).equal(null));
+
+    // third stop
+    res = await request
+      .post('/api/drivers/route/stop')
+      .send({
+        customer_id: customers[2].customer.id,
+        time: (new Date()).toISOString(),
+        customer_signed: true,
+        latitude: 10,
+        longitude: 11,
+        meet_customer: true,
+        reason: null,
+        driver_name: 'John',
+        goods_back: false,
+      })
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(200);
+    expect(res.body.pathway).equal(null);
+
+    // orders from the third customer should be delivered
+    orders = await models.Orders.findAll({
+      where: {
+        customer_id: customers[2].customer.id,
+      },
+      raw: true,
+    });
+    expect(orders.length).equal(1);
+    orders.forEach((o) => expect(o.delivered_at).not.to.be.equal(null));
+
+    dbRoute = await models.Routes.findByPk(route.id);
+    expect(dbRoute.pathway[0].id).equal(customers[0].customer.id);
+    dbRoute.pathway[0].Orders.forEach((o) => expect(o.delivered_at).not.to.be.equal(null));
+    dbRoute.pathway[1].Orders.forEach((o) => expect(o.delivered_at).not.to.be.equal(null));
+    dbRoute.pathway[2].Orders.forEach((o) => expect(o.delivered_at).not.to.be.equal(null));
   });
 });
