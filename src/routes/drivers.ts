@@ -53,6 +53,8 @@ router.post('/login', DriversCtrl.authenticate);
  *      "id": 4,
  *      "tour_id": 3,
  *      "uuid": "3f1943d0-c9eb-11eb-9585-374befa75bfc",
+ *      "original_pathway_length": 3,
+ *      "current_pathway_index": 1,
  *      "pathway": {
  *        "id": 7,
  *        "city": "City 2",
@@ -172,6 +174,8 @@ router.put('/route/end', isDriverAuthenticated, DriversCtrl.endRoute);
  *      "id": 4,
  *      "tour_id": 3,
  *      "uuid": "3f1943d0-c9eb-11eb-9585-374befa75bfc",
+ *      "original_pathway_length": 3,
+ *      "current_pathway_index": 1,
  *      "pathway": {
  *        "id": 7,
  *        "city": "City 2",

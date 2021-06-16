@@ -63,13 +63,19 @@ export default {
     const route: FullRoute = record.toJSON();
     const { pathway, Stops, ...rest } = route;
     const visitedCustomersIds = Stops.map((s) => s.customer_id);
-    const filteredPathway = route.pathway.filter((path) => {
+    const [filteredPathway] = route.pathway.filter((path) => {
       return !visitedCustomersIds.includes(path.id);
     });
 
+    const current_pathway_index = filteredPathway
+      ? pathway.findIndex((p) => p.id === filteredPathway.id)
+      : null;
+
     return {
       ...rest,
-      pathway: filteredPathway.length ? filteredPathway[0] : null,
+      original_pathway_length: pathway.length,
+      current_pathway_index,
+      pathway: filteredPathway || null,
     };
   },
   get: async (where: any): Promise<FullRoute> => {

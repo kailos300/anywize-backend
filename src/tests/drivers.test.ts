@@ -258,6 +258,8 @@ describe('Drivers tests', () => {
     expect(res.status).equal(200);
     expect(res.body.pathway.id).equal(customers[1].customer.id);
     expect(res.body.pathway.Orders.length).equal(1);
+    expect(res.body.original_pathway_length).equal(3);
+    expect(res.body.current_pathway_index).equal(1);
 
     // orders from the first customer should be delivered
     let orders = await models.Orders.findAll({
@@ -294,6 +296,8 @@ describe('Drivers tests', () => {
     expect(res.status).equal(200);
     expect(res.body.pathway.id).equal(customers[2].customer.id);
     expect(res.body.pathway.Orders.length).equal(1);
+    expect(res.body.original_pathway_length).equal(3);
+    expect(res.body.current_pathway_index).equal(2);
 
     // orders from the second customer should be delivered
     orders = await models.Orders.findAll({
