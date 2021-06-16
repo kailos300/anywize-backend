@@ -6,7 +6,7 @@ import { DateTime } from 'luxon';
 
 const { request } = Helper;
 
-describe.only('Drivers tests', () => {
+describe('Drivers tests', () => {
   let supplier: Supplier;
 
   before(async () => {
@@ -218,7 +218,6 @@ describe.only('Drivers tests', () => {
       .put('/api/drivers/route/start')
       .set('Authorization', `Bearer ${token}`);
 
-    expect(res.status).equal(400);
-    expect(res.body.error).equal('ROUTE_ALREADY_ENDED');
+    expect(res.status).equal(401);
   });
 });
