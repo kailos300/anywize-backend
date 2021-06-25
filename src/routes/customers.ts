@@ -20,6 +20,7 @@ const router = Router();
  *      tour_id: 1,
  *      tour_position: 1,
  *      name: 'Brekke Inc',
+ *      number: '123123',
  *      alias: 'Rutherford and Sons',
  *      street: 'st',
  *      street_number: '123123',
@@ -68,6 +69,7 @@ router.get('/:id', userHasSupplier, CustomersCtrl.get);
  *       tour_id: 1,
  *       tour_position: 1,
  *       name: 'Olson Inc',
+ *       number: '123123',
  *       alias: 'Bayer LLC',
  *       street: 'st',
  *       street_number: '123123',
@@ -103,6 +105,7 @@ router.get('/', userHasSupplier, CustomersCtrl.list);
  *        tour_id: 2, // required
  *        tour_position: 1, // required
  *        name: 'Customer one', // required
+ *        number: '123123',
  *        alias: 'Customer one', // required
  *        street: 'st', // required
  *        street_number: '123123', // required
@@ -122,6 +125,7 @@ router.get('/', userHasSupplier, CustomersCtrl.list);
  *       tour_id: 1,
  *       tour_position: 1,
  *       name: 'Olson Inc',
+ *       number: '123123',
  *       alias: 'Bayer LLC',
  *       street: 'st',
  *       street_number: '123123',
@@ -180,6 +184,7 @@ router.post('/', userHasSupplier, CustomersCtrl.create);
  *        tour_id: 2, // required
  *        tour_position: 1, // required
  *        name: 'Customer one', // required
+ *        number: '123123',
  *        alias: 'Customer one', // required
  *        street: 'st', // required
  *        street_number: '123123', // required
@@ -199,6 +204,7 @@ router.post('/', userHasSupplier, CustomersCtrl.create);
  *       tour_id: 1,
  *       tour_position: 1,
  *       name: 'Olson Inc',
+ *       number: '123123',
  *       alias: 'Bayer LLC',
  *       street: 'st',
  *       street_number: '123123',
