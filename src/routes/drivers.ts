@@ -62,6 +62,8 @@ router.post('/login', DriversCtrl.authenticate);
  *        "alias": "Klein Inc",
  *        "email": "macy61@yahoo.com",
  *        "phone": "123321312312",
+ *        "deposit_agreement": 'KEY_BOX', // 'BRING_KEY' | 'NONE'
+ *        "keybox_code": '123',
  *        "Orders": [
  *          {
  *            "id": 8,
@@ -183,6 +185,8 @@ router.put('/route/end', isDriverAuthenticated, DriversCtrl.endRoute);
  *        "alias": "Klein Inc",
  *        "email": "macy61@yahoo.com",
  *        "phone": "123321312312",
+ *        "deposit_agreement": 'KEY_BOX',
+ *        "keybox_code": '123',
  *        "Orders": [
  *          {
  *            "id": 8,

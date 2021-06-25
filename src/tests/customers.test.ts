@@ -58,6 +58,7 @@ describe('Customers tests', () => {
 
     expect(res.status).equal(400);
     expect(res.body.errors).eql({
+      deposit_agreement: '"deposit_agreement\" is required',
       tour_id: '"tour_id" is required',
       tour_position: '"tour_position" is required',
       name: '"name" is required',
@@ -89,6 +90,8 @@ describe('Customers tests', () => {
         phone: '123123123',
         latitude: 10.00001,
         longitude: 11.00001,
+        deposit_agreement: 'BRING_KEY',
+        keybox_code: null,
       })
       .set('Authorization', `Bearer ${token}`);
 
@@ -111,6 +114,8 @@ describe('Customers tests', () => {
         phone: '123123123',
         latitude: 10.00001,
         longitude: 11.00001,
+        deposit_agreement: 'BRING_KEY',
+        keybox_code: null,
       })
       .set('Authorization', `Bearer ${token}`);
 
@@ -148,6 +153,8 @@ describe('Customers tests', () => {
         phone: '123123123',
         latitude: 10.00001,
         longitude: 11.00001,
+        deposit_agreement: 'KEY_BOX',
+        keybox_code: 'code',
       })
       .set('Authorization', `Bearer ${token}`);
 
@@ -169,6 +176,8 @@ describe('Customers tests', () => {
         phone: '123123123',
         latitude: 10.00001,
         longitude: 11.00001,
+        deposit_agreement: 'KEY_BOX',
+        keybox_code: 'code',
       })
       .set('Authorization', `Bearer ${token}`);
 
@@ -192,6 +201,8 @@ describe('Customers tests', () => {
         latitude: 10.00001,
         longitude: 11.00001,
         number: 'blabla bla',
+        deposit_agreement: 'KEY_BOX',
+        keybox_code: 'code',
       })
       .set('Authorization', `Bearer ${token}`);
 
@@ -199,6 +210,8 @@ describe('Customers tests', () => {
     expect(res.body.name).equal('Customer updated');
     expect(res.body.alias).equal('Customer updated');
     expect(res.body.number).equal('blabla bla');
+    expect(res.body.deposit_agreement).equal('KEY_BOX');
+    expect(res.body.keybox_code).equal('code');
   });
 
   it('GET /api/customers should return a list of customers', async () => {

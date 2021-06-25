@@ -37,6 +37,14 @@ export default function(sequelize, DataTypes) {
     country: {
       type: DataTypes.STRING,
     },
+    deposit_agreement: {
+      type: DataTypes.STRING,
+      defaultValue: 'NONE',
+    },
+    keybox_code: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     coordinates: {
       type: DataTypes.GEOMETRY('POINT'),
       defaultValue: () => ({

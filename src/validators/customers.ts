@@ -19,6 +19,12 @@ const CreateSchema = Joi.object().keys({
   active: Joi.boolean().truthy(1, '1').falsy(0, '0').optional(),
   latitude: Joi.number().precision(8).required(),
   longitude: Joi.number().precision(8).required(),
+  deposit_agreement: Joi.string().required().valid('NONE', 'BRING_KEY', 'KEY_BOX'),
+  keybox_code: Joi.any().when('deposit_agreement', {
+    is: 'KEY_BOX',
+    then: Joi.string().required(),
+    otherwise: Joi.string().optional().allow(null, ''),
+  }),
 });
 
 export default {

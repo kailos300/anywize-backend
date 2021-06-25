@@ -34,6 +34,8 @@ const router = Router();
  *      latitude: 10.00002,
  *      longitude: 11.00004,
  *      active: true,
+ *      deposit_agreement: 'BRING_KEY',
+ *      keybox_code: null,
  *      updated_at: '2021-06-08T17:14:07.000Z',
  *      created_at: '2021-06-08T17:14:07.000Z',
  *      Tour: { id: 1, name: 'Tour: Schultz, Feeney and Robel' }
@@ -81,8 +83,11 @@ router.get('/:id', userHasSupplier, CustomersCtrl.get);
  *       sms_notifications: 0,
  *       email_notifications: 1,
  *       active: 1,
+ *       deposit_agreement: 'BRING_KEY',
+ *       keybox_code: null,
  *       updated_at: '2021-06-08T17:09:28.000Z',
- *       created_at: '2021-06-08T17:09:28.000Z'
+ *       created_at: '2021-06-08T17:09:28.000Z',
+ *       Tour: { id: 1, name: 'Tour: Schultz, Feeney and Robel' }
  *     }]
  *
  * @apiErrorExample Unauthenticated:
@@ -116,6 +121,8 @@ router.get('/', userHasSupplier, CustomersCtrl.list);
  *        phone: '123123123', // required
  *        latitude: 10.00002, // required
  *        longitude: 11.00004, // required
+ *        deposit_agreement: 'BRING_KEY', // Options: 'KEY_BOX', 'NONE', 'BRING_KEY'
+ *        keybox_code: null, // required when deposit_agreement = 'KEY_BOX'
  *     }
  *
  * @apiSuccessExample Success-Response:
@@ -139,6 +146,8 @@ router.get('/', userHasSupplier, CustomersCtrl.list);
  *       active: 1,
  *       latitude: 10.00002,
  *       longitude: 11.00004,
+ *       deposit_agreement: 'BRING_KEY',
+ *       keybox_code: null,
  *       updated_at: '2021-06-08T17:09:28.000Z',
  *       created_at: '2021-06-08T17:09:28.000Z'
  *     }
@@ -195,6 +204,8 @@ router.post('/', userHasSupplier, CustomersCtrl.create);
  *        phone: '123123123', // required
  *        latitude: 10.0002, // required
  *        longitude: 11.00004, // required
+ *        deposit_agreement: 'BRING_KEY', // Options: 'KEY_BOX', 'NONE', 'BRING_KEY'
+ *        keybox_code: null, // required when deposit_agreement = 'KEY_BOX'
  *     }
  *
  * @apiSuccessExample Success-Response:
@@ -219,7 +230,9 @@ router.post('/', userHasSupplier, CustomersCtrl.create);
  *       latitude: 10.0002,
  *       longitude: 11.00004,
  *       updated_at: '2021-06-08T17:09:28.000Z',
- *       created_at: '2021-06-08T17:09:28.000Z'
+ *       created_at: '2021-06-08T17:09:28.000Z',
+ *       deposit_agreement: 'BRING_KEY',
+ *       keybox_code: null,
  *     }
  *
  * @apiErrorExample Unauthenticated:

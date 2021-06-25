@@ -111,6 +111,8 @@ describe('Routes tests', () => {
       coordinates: customer.coordinates,
       email: customer.email,
       phone: customer.phone,
+      deposit_agreement: customer.deposit_agreement,
+      keybox_code: customer.keybox_code || null,
       Orders: [
         {
           id: order.id,
@@ -151,6 +153,8 @@ describe('Routes tests', () => {
       coordinates: customerThree.coordinates,
       email: customerThree.email,
       phone: customerThree.phone,
+      deposit_agreement: customerThree.deposit_agreement,
+      keybox_code: customerThree.keybox_code || null,
       Orders: [
         {
           id: orderFour.id,
@@ -179,6 +183,8 @@ describe('Routes tests', () => {
       coordinates: customerTwo.coordinates,
       email: customerTwo.email,
       phone: customerTwo.phone,
+      deposit_agreement: customerTwo.deposit_agreement,
+      keybox_code: customerTwo.keybox_code || null,
       Orders: [{
         id: orderTwo.id,
         supplier_id: orderTwo.supplier_id,

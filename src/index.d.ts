@@ -52,6 +52,7 @@ declare type Tour = {
   created_at: string;
 };
 
+declare type DepositAgreement = 'NONE' | 'BRING_KEY' | 'KEY_BOX';
 declare type Customer = {
   id: number;
   supplier_id: number;
@@ -73,6 +74,8 @@ declare type Customer = {
   };
   latitude?: string;
   longitude?: string;
+  deposit_agreement: DepositAgreement;
+  keybox_code: string;
 } & AddressAttributes;
 
 declare type Order = {

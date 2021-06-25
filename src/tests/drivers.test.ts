@@ -129,6 +129,8 @@ describe('Drivers tests', () => {
       coordinates: customers[0].customer.coordinates,
       email: customers[0].customer.email,
       phone: customers[0].customer.phone,
+      deposit_agreement: customers[0].customer.deposit_agreement,
+      keybox_code: customers[0].customer.keybox_code || null,
       Orders: [
         {
           id: customers[0].orders[0].id,

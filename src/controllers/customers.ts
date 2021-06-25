@@ -12,7 +12,6 @@ export default {
       const { rows, count } = await models.Customers.findAndCountAll({
         limit: parseInt(limit || 20, 10),
         offset: parseInt(offset || 0, 10),
-        raw: true,
         where: {
           active: true,
           supplier_id: user.supplier_id,
@@ -30,6 +29,10 @@ export default {
           'zipcode',
           'country',
         ],
+        include: [{
+          model: models.Tours,
+          attributes: ['id', 'name'],
+        }],
       });
 
       res.set('x-total-count', count);

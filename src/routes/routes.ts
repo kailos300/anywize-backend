@@ -26,6 +26,8 @@ const router = Router();
  *          "alias": "Klein Inc",
  *          "email": "macy61@yahoo.com",
  *          "phone": "123321312312",
+ *          "deposit_agreement": 'KEY_BOX', // 'BRING_KEY' | 'NONE'
+ *          "keybox_code": '123',
  *          "Orders": [
  *            {
  *              "id": 8,
@@ -58,6 +60,8 @@ const router = Router();
  *          "alias": "Thompson, Berge and Stark",
  *          "email": "madisyn.ullrich86@hotmail.com",
  *          "phone": "123321312312",
+ *          "deposit_agreement": 'KEY_BOX', // 'BRING_KEY' | 'NONE'
+ *          "keybox_code": '123',
  *          "Orders": [
  *            {
  *              "id": 9,
@@ -202,6 +206,8 @@ router.get('/', userHasSupplier, RoutesCtrl.list);
  *          "city": "City 2",
  *          "zipcode": "123",
  *          "country": "BR",
+ *          "deposit_agreement": 'KEY_BOX', // 'BRING_KEY' | 'NONE'
+ *          "keybox_code": '123',
  *          "coordinates": {
  *            "type": "Point",
  *            "coordinates": [
