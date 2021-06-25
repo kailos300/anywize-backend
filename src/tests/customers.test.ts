@@ -191,12 +191,14 @@ describe('Customers tests', () => {
         phone: '123123123',
         latitude: 10.00001,
         longitude: 11.00001,
+        number: 'blabla bla',
       })
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.status).equal(200);
     expect(res.body.name).equal('Customer updated');
     expect(res.body.alias).equal('Customer updated');
+    expect(res.body.number).equal('blabla bla');
   });
 
   it('GET /api/customers should return a list of customers', async () => {

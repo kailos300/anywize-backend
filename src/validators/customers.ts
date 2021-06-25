@@ -4,6 +4,7 @@ import Validate from './index';
 const CreateSchema = Joi.object().keys({
   tour_id: Joi.number().integer().required(),
   tour_position: Joi.number().integer().required(),
+  number: Joi.string().optional().allow(null, ''),
   name: Joi.string().required(),
   alias: Joi.string().required(),
   street: Joi.string().required(),

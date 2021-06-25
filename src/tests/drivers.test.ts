@@ -119,6 +119,7 @@ describe('Drivers tests', () => {
       tour_id: customers[0].customer.tour_id,
       tour_position: customers[0].customer.tour_position,
       name: customers[0].customer.name,
+      number: customers[0].customer.number || null,
       alias: customers[0].customer.alias,
       street: customers[0].customer.street,
       street_number: customers[0].customer.street_number,

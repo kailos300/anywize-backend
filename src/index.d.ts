@@ -57,6 +57,7 @@ declare type Customer = {
   supplier_id: number;
   tour_id: number;
   tour_position: number;
+  number: string;
   name: string;
   alias: string;
   email: string;

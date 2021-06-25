@@ -12,6 +12,10 @@ export default function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    number: {
+      type: DataTypes.STRING,
+      defaultValue: null,
+    },
     name: {
       type: DataTypes.STRING,
     },
