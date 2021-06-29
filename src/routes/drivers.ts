@@ -1,6 +1,29 @@
 import { Router } from 'express';
+import multer from 'multer';
 import DriversCtrl from '../controllers/drivers';
 import isDriverAuthenticated from '../middlewares/isDriverAuthenticated';
+
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 20 * 1024 * 1024,
+  },
+  fileFilter: function(req, file, cb) {
+    if (!['image/png', 'image/bmp', 'image/jpg', 'image/jpeg',].includes(file.mimetype)) {
+      return cb(new Error('Invalid file type'));
+    }
+
+    return cb(null, true);
+  },
+});
+const fileUploadMiddleware = upload.fields([{
+  name: 'signature',
+  maxCount: 1,
+}, {
+  name: 'pictures',
+  maxCount: 20,
+}]);
 
 const router = Router();
 
@@ -156,9 +179,11 @@ router.put('/route/end', isDriverAuthenticated, DriversCtrl.endRoute);
  * @apiName Create stop
  * @apiGroup Drivers
  * @apiDescription Creates a stop in the route. The response is the route after the current stop is completed
- * having the `pathway` object updated to the next section
+ * having the `pathway` object updated to the next section. The endpoint accepts two set of pictures:
+ * the driver/customer signature file, under the key `signature` and a series of pictures under `pictures`.
  *
  * @apiParamExample {json} Request-Example:
+ *     // to send pictures send form data with binary keys `signature` (1 file max) and `pictures` max 20 files
  *     {
  *        customer_id: 1,
  *        time: '2021-01-01T10:00:00',
@@ -250,7 +275,7 @@ router.put('/route/end', isDriverAuthenticated, DriversCtrl.endRoute);
  *       }
  *     }
  */
-router.post('/route/stop', isDriverAuthenticated, DriversCtrl.createStop);
+router.post('/route/stop', isDriverAuthenticated, fileUploadMiddleware, DriversCtrl.createStop);
 
 /**
  * @api {post} /api/drivers/route/location Track current location

@@ -3,6 +3,7 @@ import orderBy from 'lodash/orderBy';
 import randomString from 'randomstring';
 import { DateTime } from 'luxon';
 import models from '../models';
+import S3Logic from './s3';
 
 export default {
   markOrdersAsDelivered: async (uuid: string, customer_id: number): Promise<any> => {
@@ -104,7 +105,18 @@ export default {
       throw createError(404, 'NOT_FOUND');
     }
 
-    return route.toJSON();
+    const asJson: FullRoute = route.toJSON();
+
+    return {
+      ...asJson,
+      Stops: asJson.Stops.map((stop) => {
+        return {
+          ...stop,
+          signature_file: stop.signature_file ? S3Logic.getSignedUrl(stop.signature_file) : null,
+          pictures: stop.pictures.map((p) => S3Logic.getSignedUrl(p)),
+        };
+      }),
+    };
   },
   unlinkOrders: async (route: Route): Promise<void> => {
     await models.Orders.update({

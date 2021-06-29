@@ -106,7 +106,18 @@ declare type Route = {
 };
 
 declare type Stop = {
+  id: number;
   customer_id: number;
+  signature_file: string;
+  pictures: string[];
+  route_id: number;
+  time: string;
+  customer_signed: boolean;
+  location: any;
+  meet_customer: boolean;
+  reason: string;
+  driver_name: string;
+  goods_back: boolean;
 };
 
 declare type FullRoute = Route & {
@@ -123,4 +134,6 @@ declare type RouteForDriver = Omit<Route, 'pathway'> & {
     TransportAgent: Pick<TransportAgent, 'id', 'name', 'alias'>;
   };
   pathway: CustomerWithOrders;
+  original_pathway_length: number;
+  current_pathway_index: number;
 };

@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import Sequelize from 'sequelize';
 import createError from 'http-errors';
 import { DateTime } from 'luxon';
+import S3Logic from '../logic/s3';
 import RoutesLogic from '../logic/routes';
 import { getDriverJWT } from '../logic/users';
 import models from '../models';
@@ -52,9 +53,11 @@ export default {
   createStop: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { uuid, id } = req.route;
-      const { body } = req;
+      const { body, files } = req;
 
       await DriversValidators.createStop(body);
+
+      const [signature, pictures] = await S3Logic.processStopFiles(<any>files);
 
       await models.Stops.create({
         ...body,
@@ -63,6 +66,8 @@ export default {
           type: 'Point',
           coordinates: [body.longitude, body.latitude],
         },
+        signature_file: signature,
+        pictures,
       });
 
       await RoutesLogic.markOrdersAsDelivered(uuid, parseInt(body.customer_id, 10));
