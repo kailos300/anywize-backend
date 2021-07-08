@@ -1,7 +1,9 @@
 import 'mocha';
 import { expect } from 'chai';
+import sinon from 'sinon';
 import Helper from './_helper';
 import models from '../models';
+import S3Logic from '../logic/s3';
 import { DateTime } from 'luxon';
 
 const { request } = Helper;
@@ -112,7 +114,7 @@ describe('Drivers tests', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.status).equal(200);
-    expect(res.body.pathway).eql({
+    expect(res.body.pathway[0]).eql({
       latitude: customers[0].customer.coordinates.coordinates[1],
       longitude: customers[0].customer.coordinates.coordinates[0],
       id: customers[0].customer.id,
@@ -241,28 +243,30 @@ describe('Drivers tests', () => {
       .get('/api/drivers/route')
       .set('Authorization', `Bearer ${token}`);
     expect(res.status).equal(200);
-    expect(res.body.pathway.id).equal(customers[0].customer.id);
+    expect(res.body.pathway[0].id).equal(customers[0].customer.id);
+
+    let spy = sinon.stub(S3Logic, 'processStopFiles').callsFake(() => ['signature.png', []]);
 
     res = await request
       .post('/api/drivers/route/stop')
-      .send({
-        customer_id: customers[0].customer.id,
-        time: (new Date()).toISOString(),
-        customer_signed: true,
-        latitude: 10,
-        longitude: 11,
-        meet_customer: true,
-        reason: null,
-        driver_name: 'John',
-        goods_back: false,
-      })
+      .attach('signature', `${process.cwd()}/src/tests/data/c.jpeg`)
+      .field('customer_id', customers[0].customer.id)
+      .field('time', (new Date()).toISOString())
+      .field('customer_signed', true)
+      .field('latitude', 10)
+      .field('longitude', 11)
+      .field('meet_customer', true)
+      .field('driver_name', 'John')
+      .field('goods_back', false)
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.status).equal(200);
-    expect(res.body.pathway.id).equal(customers[1].customer.id);
-    expect(res.body.pathway.Orders.length).equal(1);
-    expect(res.body.original_pathway_length).equal(3);
     expect(res.body.current_pathway_index).equal(1);
+    expect(res.body.pathway[res.body.current_pathway_index].id).equal(customers[1].customer.id);
+    expect(res.body.pathway[res.body.current_pathway_index].Orders.length).equal(1);
+
+    expect(spy.callCount).equal(1);
+    spy.restore();
 
     // orders from the first customer should be delivered
     let orders = await models.Orders.findAll({
@@ -281,26 +285,26 @@ describe('Drivers tests', () => {
     dbRoute.pathway[2].Orders.forEach((o) => expect(o.delivered_at).equal(null));
 
     // second stop
+    spy = sinon.stub(S3Logic, 'processStopFiles').callsFake(() => ['signature.png', ['one.jpg']]);
     res = await request
       .post('/api/drivers/route/stop')
-      .send({
-        customer_id: customers[1].customer.id,
-        time: (new Date()).toISOString(),
-        customer_signed: true,
-        latitude: 10,
-        longitude: 11,
-        meet_customer: true,
-        reason: null,
-        driver_name: 'John',
-        goods_back: false,
-      })
+      .field('customer_id', customers[1].customer.id)
+      .field('time', (new Date()).toISOString())
+      .field('customer_signed', true)
+      .field('latitude', 10)
+      .field('longitude', 11)
+      .field('meet_customer', true)
+      .field('driver_name', 'John')
+      .field('goods_back', false)
+      .attach('signature', `${process.cwd()}/src/tests/data/c.jpeg`)
+      .attach('pictures', `${process.cwd()}/src/tests/data/c.jpeg`)
+      .attach('pictures', `${process.cwd()}/src/tests/data/c.jpeg`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.status).equal(200);
-    expect(res.body.pathway.id).equal(customers[2].customer.id);
-    expect(res.body.pathway.Orders.length).equal(1);
-    expect(res.body.original_pathway_length).equal(3);
     expect(res.body.current_pathway_index).equal(2);
+    expect(res.body.pathway[res.body.current_pathway_index].id).equal(customers[2].customer.id);
+    expect(res.body.pathway[res.body.current_pathway_index].Orders.length).equal(1);
 
     // orders from the second customer should be delivered
     orders = await models.Orders.findAll({
@@ -352,5 +356,7 @@ describe('Drivers tests', () => {
     dbRoute.pathway[0].Orders.forEach((o) => expect(o.delivered_at).not.to.be.equal(null));
     dbRoute.pathway[1].Orders.forEach((o) => expect(o.delivered_at).not.to.be.equal(null));
     dbRoute.pathway[2].Orders.forEach((o) => expect(o.delivered_at).not.to.be.equal(null));
+
+    spy.restore();
   });
 });

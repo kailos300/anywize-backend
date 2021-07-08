@@ -66,7 +66,10 @@ router.post('/login', DriversCtrl.authenticate);
  * @api {get} /api/drivers/route Get route
  * @apiName Get route
  * @apiGroup Drivers
- * @apiDescription Returns the full route related to the driver's session
+ * @apiDescription Returns the full route related to the driver's session. Pathway contains
+ * one item  for each customer. Each customer can potentially have more than one order to be delivered.
+ * `current_pathway_index` indicates the customer in the `pathway` array that should be visited next. Once
+ * all the customers have been visited `pathway` will be null
  *
  * @apiParamExample {json} Request-Example:
  *    GET /api/drivers/route
@@ -76,9 +79,8 @@ router.post('/login', DriversCtrl.authenticate);
  *      "id": 4,
  *      "tour_id": 3,
  *      "uuid": "3f1943d0-c9eb-11eb-9585-374befa75bfc",
- *      "original_pathway_length": 3,
  *      "current_pathway_index": 1,
- *      "pathway": {
+ *      "pathway": [{
  *        "id": 7,
  *        "city": "City 2",
  *        "name": "Bruen, Halvorson and Carter",
@@ -112,7 +114,7 @@ router.post('/login', DriversCtrl.authenticate);
  *        },
  *        "street_number": "123123",
  *        "tour_position": 1
- *      },
+ *      }],
  *      "start_date": null,
  *      "end_date": null,
  *      "code": "ZOIBDM",
@@ -201,9 +203,8 @@ router.put('/route/end', isDriverAuthenticated, DriversCtrl.endRoute);
  *      "id": 4,
  *      "tour_id": 3,
  *      "uuid": "3f1943d0-c9eb-11eb-9585-374befa75bfc",
- *      "original_pathway_length": 3,
  *      "current_pathway_index": 1,
- *      "pathway": {
+ *      "pathway": [{
  *        "id": 7,
  *        "city": "City 2",
  *        "name": "Bruen, Halvorson and Carter",
@@ -237,7 +238,7 @@ router.put('/route/end', isDriverAuthenticated, DriversCtrl.endRoute);
  *        },
  *        "street_number": "123123",
  *        "tour_position": 1
- *      },
+ *      }],
  *      "start_date": null,
  *      "end_date": null,
  *      "code": "ZOIBDM",

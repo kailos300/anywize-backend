@@ -74,9 +74,8 @@ export default {
 
     return {
       ...rest,
-      original_pathway_length: pathway.length,
+      pathway: filteredPathway ? pathway : null,
       current_pathway_index,
-      pathway: filteredPathway || null,
     };
   },
   get: async (where: any): Promise<FullRoute> => {

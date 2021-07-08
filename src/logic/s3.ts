@@ -39,6 +39,10 @@ const upload = async (file: Express.Multer.File): Promise<any> => {
   Debug('Uploading...', file);
   const filename = getFilename(file);
 
+  if (process.env.NODE_ENV === 'test') {
+    return filename;
+  }
+
   return new Promise((resolve, reject) => {
     S3.upload({
       Bucket: ANYWIZE_DO_SPACES_BUCKET,

@@ -133,7 +133,6 @@ declare type RouteForDriver = Omit<Route, 'pathway'> & {
   Tour: Pick<Tour, 'id', 'name', 'supplier_id', 'description'> & {
     TransportAgent: Pick<TransportAgent, 'id', 'name', 'alias'>;
   };
-  pathway: CustomerWithOrders;
-  original_pathway_length: number;
+  pathway: CustomerWithOrders[];
   current_pathway_index: number;
 };
