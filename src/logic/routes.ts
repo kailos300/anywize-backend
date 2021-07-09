@@ -97,6 +97,10 @@ export default {
         model: models.DriversLocations,
         attributes: ['location', 'created_at'],
         required: false,
+      }, {
+        model: models.RoutesNavigations,
+        attributes: ['customer_id', 'navigation', 'created_at'],
+        required: false,
       }],
     });
 

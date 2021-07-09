@@ -15,20 +15,23 @@ export default {
 
       await DriversValidators.login(body);
 
-      const route: Route = await models.Routes.findOne({
+      const route = await models.Routes.findOne({
         where: {
           end_date: null,
           code: body.code,
           password: body.password,
         },
-        raw: true,
       });
 
       if (!route) {
         throw createError(400, 'INVALID_AUTH_OR_ROUTE');
       }
 
-      const token = getDriverJWT(route);
+      const token = getDriverJWT(<Route>route);
+
+      await route.update({
+        active_driver_jwt: token,
+      });
 
       return res.send({
         token,
@@ -46,6 +49,24 @@ export default {
       });
 
       return res.send(route);
+    } catch (err) {
+      return next(err);
+    }
+  },
+  setDriverName: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { uuid } = req.route;
+      const { body } = req;
+
+      await DriversValidators.setName(body);
+
+      const route = await models.Routes.findOne({
+        where: { uuid },
+      });
+
+      await route.update(body);
+
+      return res.send({ status: 1 });
     } catch (err) {
       return next(err);
     }
@@ -75,6 +96,23 @@ export default {
       const route = await RoutesLogic.getRouteForDriver({ uuid });
 
       return res.send(route);
+    } catch (err) {
+      return next(err);
+    }
+  },
+  addNavigation: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.route;
+      const { body } = req;
+
+      await DriversValidators.addNavigation(body);
+
+      await models.RoutesNavigations.create({
+        ...body,
+        route_id: id,
+      });
+
+      return res.send({ status: 1 });
     } catch (err) {
       return next(err);
     }

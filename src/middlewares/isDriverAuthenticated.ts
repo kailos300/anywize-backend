@@ -38,6 +38,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         where: {
           uuid: payload.uuid,
           end_date: null,
+          active_driver_jwt: token,
         },
         attributes: ['id', 'uuid'],
         raw: true,

@@ -139,6 +139,36 @@ router.post('/login', DriversCtrl.authenticate);
 router.get('/route', isDriverAuthenticated, DriversCtrl.route);
 
 /**
+ * @api {put} /api/drivers/route Set driver info
+ * @apiName Set driver info
+ * @apiGroup Drivers
+ * @apiDescription Updates the route setting the driver's name and phone
+ *
+ * @apiParamExample {json} Request-Example:
+ *     {
+ *        "driver_name": "Jesus",
+ *        "driver_phone": "12312313123",
+ *     }
+ *
+ * @apiSuccessExample Success-Response:
+ *     { status: 1 }
+ *
+ * @apiErrorExample Unauthenticated:
+ *     HTTP/1.1 401
+ *
+ * @apiErrorExample Error validation:
+ *     HTTP/1.1 400
+ *     {
+ *       "error": "VALIDATION_ERROR",
+ *       "errors": {
+ *          "driver_name": '"driver_name" is required',
+ *          "driver_phone": '"driver_phone" is required',
+ *       }
+ *     }
+ */
+router.put('/route', isDriverAuthenticated, DriversCtrl.setDriverName);
+
+/**
  * @api {put} /api/drivers/route/start Start route
  * @apiName Start route
  * @apiGroup Drivers
@@ -195,6 +225,7 @@ router.put('/route/end', isDriverAuthenticated, DriversCtrl.endRoute);
  *        meet_customer: true,
  *        reason: '',
  *        driver_name: 'Driver',
+ *        driver_phone: '12312123123',
  *        goods_back: false,
  *     }
  *
@@ -309,5 +340,35 @@ router.post('/route/stop', isDriverAuthenticated, fileUploadMiddleware, DriversC
  *     }
  */
 router.post('/route/location', isDriverAuthenticated, DriversCtrl.location);
+
+/**
+ * @api {post} /api/drivers/route/navigation Save proposed navigation
+ * @apiName Save proposed navigation
+ * @apiGroup Drivers
+ * @apiDescription Saves the proposed navigation that the driver was shown (the navigation as returned by mapbox)
+ *
+ * @apiParamExample {json} Request-Example:
+ *     {
+ *        customer_id: 1,
+ *        navigation: {} // raw object returned by mapbox
+ *     }
+ *
+ * @apiSuccessExample Success-Response:
+ *    { status: 1 }
+ *
+ * @apiErrorExample Unauthenticated:
+ *     HTTP/1.1 401
+ *
+ * @apiErrorExample Error validation:
+ *     HTTP/1.1 400
+ *     {
+ *       "error": "VALIDATION_ERROR",
+ *       "errors": {
+ *          "customer_id": '"customer_id" is required',
+ *          "navigation": '"navigation" is required',
+ *       }
+ *     }
+ */
+ router.post('/route/navigation', isDriverAuthenticated, DriversCtrl.addNavigation);
 
 export default router;

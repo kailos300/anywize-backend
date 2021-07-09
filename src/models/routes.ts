@@ -28,6 +28,18 @@ export default function(sequelize, DataTypes) {
     password: {
       type: DataTypes.STRING,
     },
+    active_driver_jwt: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    driver_name: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    driver_phone: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   }, {
     timestamps: false,
     tableName: 'routes',
@@ -40,6 +52,7 @@ export default function(sequelize, DataTypes) {
     Routes.hasMany(models.Orders, { foreignKey: 'route_id' });
     Routes.hasMany(models.Stops, { foreignKey: 'route_id' });
     Routes.hasMany(models.DriversLocations, { foreignKey: 'route_id' });
+    Routes.hasMany(models.RoutesNavigations, { foreignKey: 'route_id' });
   };
 
   return Routes;

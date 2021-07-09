@@ -132,8 +132,42 @@ const router = Router();
  *          "delivered_at": null
  *        }
  *      ],
- *      "Stops": [],
- *      "DriversLocations": []
+ *      "Stops": [{ // array with the stops the driver created
+ *        "id": 1,
+ *        "customer_id": 2,
+ *        "signature_file": 'bla.com/png.png',
+ *        "pictures": ['bla.com/one.png', 'bla.com/two.png'],
+ *        "route_id": 4,
+ *        "time": '2021-01-01T10:00:00,
+ *        "customer_signed": true,
+ *        "location": {
+ *          "type": "Point",
+ *          "coordinates": [10, 10.1] // longitude,latitude
+ *        },
+ *        "meet_customer": true,
+ *        "reason": null,
+ *        "driver_name": "John",
+ *        "driver_phone": "1231313123",
+ *        "goods_back": false,
+ *      }],
+ *      "DriversLocations": [{ // array that contains all the positions the driver reported
+ *        "location": {
+ *          "type": "Point",
+ *          "coordinates": [10, 10.1] // longitude,latitude
+ *        },
+ *        "created_at": "2021-01-01T10:00:00",
+ *      }, {
+ *        "location": {
+ *          "type": "Point",
+ *          "coordinates": [10, 10.1] // longitude,latitude
+ *        },
+ *        "created_at": "2021-01-01T10:00:00",
+ *      }],
+ *      "RoutesNavigations": [{ // array that contains all the directions the driver was given
+ *        "customer_id": 1,
+ *        "navigation": {} // object containing mapbox returned directions
+ *        "created_at": "2021-01-01T10:00:00"
+ *      }]
  *    }
  *
  * @apiErrorExample Unauthenticated:

@@ -41,6 +41,10 @@ export default function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    driver_phone: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     goods_back: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,

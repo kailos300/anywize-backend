@@ -19,6 +19,9 @@ describe('Drivers tests', () => {
     let res = await request.get('/api/drivers/route');
     expect(res.status).equal(401);
 
+    res = await request.put('/api/drivers/route');
+    expect(res.status).equal(401);
+
     res = await request.put('/api/drivers/route/start');
     expect(res.status).equal(401);
 
@@ -30,12 +33,18 @@ describe('Drivers tests', () => {
 
     res = await request.post('/api/drivers/route/location');
     expect(res.status).equal(401);
+
+    res = await request.post('/api/drivers/route/navigation');
+    expect(res.status).equal(401);
   });
 
   it('/api/drivers/* should return 401 if using a regular auth token', async () => {
     const { token } = await Helper.createUser();
 
     let res = await request.get('/api/drivers/route').set('Authorization', `Bearer ${token}`);
+    expect(res.status).equal(401);
+
+    res = await request.put('/api/drivers/route').set('Authorization', `Bearer ${token}`);
     expect(res.status).equal(401);
 
     res = await request.put('/api/drivers/route/start').set('Authorization', `Bearer ${token}`);
@@ -48,6 +57,9 @@ describe('Drivers tests', () => {
     expect(res.status).equal(401);
 
     res = await request.post('/api/drivers/route/location').set('Authorization', `Bearer ${token}`);
+    expect(res.status).equal(401);
+
+    res = await request.post('/api/drivers/route/navigation').set('Authorization', `Bearer ${token}`);
     expect(res.status).equal(401);
   });
 
@@ -97,6 +109,51 @@ describe('Drivers tests', () => {
 
     expect(res.status).equal(400);
     expect(res.body.error).equal('INVALID_AUTH_OR_ROUTE');
+  });
+
+  it('POST /api/drivers/login should invalidate the previous login', async () => {
+    const { user } = await Helper.createUser({ supplier_id: supplier.id });
+    const { route } = await Helper.createRoute(user, supplier, [1, 3]);
+    const { code, password } = route;
+
+    let res = await request
+      .post('/api/drivers/login')
+      .send({ code, password });
+
+    expect(res.status).equal(200);
+    expect(res.body.token).to.be.a('string');
+
+    const { token } = res.body;
+
+    let r = await models.Routes.findByPk(route.id);
+    expect(r.active_driver_jwt).equal(token);
+
+    res = await request
+      .post('/api/drivers/login')
+      .send({ code, password });
+
+    expect(res.status).equal(200);
+    expect(res.body.token).to.be.a('string');
+
+    const newToken = res.body.token;
+    expect(newToken).not.to.be.equal(token);
+
+    r = await models.Routes.findByPk(route.id);
+    expect(r.active_driver_jwt).equal(newToken);
+
+    // trying to use old token should return error
+    res = await request
+      .get('/api/drivers/route')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(401);
+
+    // new token should work
+    res = await request
+      .get('/api/drivers/route')
+      .set('Authorization', `Bearer ${newToken}`);
+
+    expect(res.status).equal(200);
   });
 
   it('GET /api/drivers/route should return a route', async () => {
@@ -165,6 +222,38 @@ describe('Drivers tests', () => {
     expect(res.body.Tour.TransportAgent.id).equal(newTransportAgent.id);
   });
 
+  it('PUT /api/drivers/route should set the driver name and phone to the route', async () => {
+    const { user } = await Helper.createUser({ supplier_id: supplier.id });
+    const {
+      route,
+      token,
+    } = await Helper.createRoute(user, supplier, [3]);
+
+    let res = await request
+      .put('/api/drivers/route')
+      .send({})
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(400);
+    expect(res.body.errors).eql({
+      driver_name: '"driver_name" is required',
+      driver_phone: '"driver_phone" is required',
+    });
+
+    res = await request
+      .put('/api/drivers/route')
+      .send({
+        driver_name: 'John',
+        driver_phone: '123123123',
+      })
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.status).equal(200);
+
+    const r = await models.Routes.findByPk(route.id);
+    expect(r.driver_name).equal('John');
+    expect(r.driver_phone).equal('123123123');
+  });
+
   it('PUT /api/drivers/route/start should mark a route as started', async () => {
     const { user } = await Helper.createUser({ supplier_id: supplier.id });
     const {
@@ -225,6 +314,94 @@ describe('Drivers tests', () => {
     expect(res.status).equal(401);
   });
 
+  it('POST /api/drivers/route/location should save the current location', async () => {
+    const { user } = await Helper.createUser({ supplier_id: supplier.id });
+    const {
+      route,
+      token,
+    } = await Helper.createRoute(user, supplier, [3]);
+
+    let res = await request
+      .post('/api/drivers/route/location')
+      .send({})
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(400);
+    expect(res.body.errors).eql({
+      longitude: '"longitude" is required',
+      latitude: '"latitude" is required',
+    });
+
+    res = await request
+      .post('/api/drivers/route/location')
+      .send({
+        longitude: 10.123123,
+        latitude: 9.2,
+      })
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.status).equal(200);
+
+    res = await request
+      .post('/api/drivers/route/location')
+      .send({
+        longitude: 10.123123,
+        latitude: 9.2,
+      })
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.status).equal(200);
+
+    const locs = await models.DriversLocations.findAll({
+      where: { route_id: route.id },
+      raw: true,
+    });
+    expect(locs.length).equal(2);
+  });
+
+  it('POST /api/drivers/route/navigation should save the proposed navigation', async () => {
+    const { user } = await Helper.createUser({ supplier_id: supplier.id });
+    const {
+      route,
+      token,
+      customers,
+    } = await Helper.createRoute(user, supplier, [3]);
+
+    let res = await request
+      .post('/api/drivers/route/navigation')
+      .send({})
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(400);
+    expect(res.body.errors).eql({
+      customer_id: '"customer_id" is required',
+      navigation: '"navigation" is required',
+    });
+
+    res = await request
+      .post('/api/drivers/route/navigation')
+      .send({
+        customer_id: customers[0].customer.id,
+        navigation: {
+          a: 1,
+          b: { a: 1, b: 2, c: 2},
+          c: [],
+        },
+      })
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(200);
+
+    const navs = await models.RoutesNavigations.findAll({
+      where: { route_id: route.id },
+      raw: true,
+    });
+    expect(navs.length).equal(1);
+    expect(navs[0].navigation).eql({
+      a: 1,
+      b: { a: 1, b: 2, c: 2},
+      c: [],
+    });
+  });
+
   it('POST /api/drivers/route/stop should create a stop, mark the route section as started and return the next pathway', async () => {
     const { user } = await Helper.createUser({ supplier_id: supplier.id });
     const {
@@ -257,6 +434,7 @@ describe('Drivers tests', () => {
       .field('longitude', 11)
       .field('meet_customer', true)
       .field('driver_name', 'John')
+      .field('driver_phone', '12312312312312')
       .field('goods_back', false)
       .set('Authorization', `Bearer ${token}`);
 
@@ -295,6 +473,7 @@ describe('Drivers tests', () => {
       .field('longitude', 11)
       .field('meet_customer', true)
       .field('driver_name', 'John')
+      .field('driver_phone', '12312312312')
       .field('goods_back', false)
       .attach('signature', `${process.cwd()}/src/tests/data/c.jpeg`)
       .attach('pictures', `${process.cwd()}/src/tests/data/c.jpeg`)
@@ -334,6 +513,7 @@ describe('Drivers tests', () => {
         meet_customer: true,
         reason: null,
         driver_name: 'John',
+        driver_phone: '123123123',
         goods_back: false,
       })
       .set('Authorization', `Bearer ${token}`);

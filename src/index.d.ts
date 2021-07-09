@@ -103,6 +103,9 @@ declare type Route = {
   end_date: string;
   code: string;
   password: string;
+  active_driver_jwt: string;
+  driver_name: string;
+  driver_phone: string;
 };
 
 declare type Stop = {
@@ -117,7 +120,16 @@ declare type Stop = {
   meet_customer: boolean;
   reason: string;
   driver_name: string;
+  driver_phone: string;
   goods_back: boolean;
+};
+
+declare type RouteNavigation = {
+  id: number;
+  route_id: number;
+  customer_id: number;
+  navigation: any;
+  created_at: string;
 };
 
 declare type FullRoute = Route & {
@@ -127,6 +139,7 @@ declare type FullRoute = Route & {
   Orders: Pick<Order, 'id' | 'delivered_at'>[];
   Stops: Stop[];
   DriversLocations: any[];
+  RoutesNavigations: Pick<RouteNavigation, 'customer_id' | 'navigation' | 'created_at'>[];
 };
 
 declare type RouteForDriver = Omit<Route, 'pathway'> & {

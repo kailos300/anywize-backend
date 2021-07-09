@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import omit from 'lodash/omit';
 import jwt from 'jsonwebtoken';
+import { DateTime } from 'luxon';
 import { SECRET } from '../passport';
 
 export function encryptPassword({ password }: { password: string }) {
@@ -24,6 +25,7 @@ export function getJWT(user: User) {
 export function getDriverJWT(route: Route): string {
   return jwt.sign({
     uuid: route.uuid,
+    time: DateTime.now().toMillis(),
   }, SECRET, {
     expiresIn: 60 * 60 * 12,
   });

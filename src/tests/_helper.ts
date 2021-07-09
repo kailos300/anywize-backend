@@ -173,13 +173,18 @@ export const createRoute = async (
   );
 
   const route = await RoutesLogic.create({ order_ids, tour_id: tour.id }, user);
+  const token = UsersLogic.getDriverJWT(route);
+
+  await models.Routes.update({ active_driver_jwt: token }, {
+    where: { id: route.id },
+  });
 
   return {
     route,
     transportAgent,
     tour,
     customers,
-    token: UsersLogic.getDriverJWT(route),
+    token,
   };
 };
 
