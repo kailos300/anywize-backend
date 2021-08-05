@@ -186,7 +186,19 @@ router.get('/:id', userHasSupplier, RoutesCtrl.get);
  * @apiName List routes
  * @apiGroup Routes
  * @apiDescription Returns a list of routes where the tour's supplier matches the one
- * of the logged in user
+ * of the logged in user. Includes the orders that are part of that route. A route will be
+ * completed when all of its Orders have `delivered_at` set. A route will be in progress when
+ * `start_date` is set but not `end_date`.
+ *
+ * Accepts query parameters `start_date_from`, `start_date_to` to specify a range to filter what
+ * the value of `start_date` should be.
+ *
+ * Accepts query parameters `end_date_from`, `end_date_to` to specify a range to filter what the
+ * value of `end_date` should be.
+ *
+ * Accepts query parameter `started` and `ended`. If `started=1` it only returns Routes where the
+ * `start_date` field is not null. If `started=0` it returns Routes where the `start_date` field is null.
+ * `ended` works the same but with `end_date`
  *
  * @apiParamExample {json} Request-Example:
  *    GET /api/routes?limit=10&offset=0
@@ -198,7 +210,31 @@ router.get('/:id', userHasSupplier, RoutesCtrl.get);
  *       id: 1,
  *       start_date: null,
  *       end_date: null,
- *       Tour: { id: 1, name: 'Tour: Mante - McClure' }
+ *       code: 'EVHC',
+ *       password: '7731',
+ *       driver_name: null,
+ *       driver_phone: null,
+ *       Tour: { id: 2, name: 'Tour: Crona and Sons' },
+ *       Orders: [
+ *         {
+ *           id: 1,
+ *           customer_id: 1,
+ *           description: 'This is the order description for Keebler - Volkman',
+ *           delivered_at: null
+ *         },
+ *         {
+ *           id: 2,
+ *           customer_id: 2,
+ *           description: 'This is the order description for Stiedemann, Little and Cartwright',
+ *           delivered_at: null
+ *         },
+ *         {
+ *           id: 3,
+ *           customer_id: 3,
+ *           description: 'This is the order description for Walter, Tillman and Mante',
+ *           delivered_at: null
+ *         }
+ *       ]
  *     }]
  *
  * @apiErrorExample Unauthenticated:

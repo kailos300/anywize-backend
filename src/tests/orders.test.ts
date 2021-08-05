@@ -182,7 +182,7 @@ describe('Orders tests', () => {
   });
 
   it('GET /api/orders should return a list of orders', async () => {
-    const { token } = await Helper.createUser({ supplier_id: supplier.id });
+    const { token, user } = await Helper.createUser({ supplier_id: supplier.id });
     const customer = await Helper.createCustomer(supplier, tour);
     const order = await Helper.createOrder(supplier, customer);
 
@@ -200,6 +200,31 @@ describe('Orders tests', () => {
     expect(res.status).equal(200);
     expect(res.body.length).equal(1);
     expect(res.headers['x-total-count']).not.to.be.equal(null);
+
+    res = await request
+      .get(`/api/orders?customer_id=${customer.id}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(200);
+    res.body.forEach((o) => expect(o.customer_id).equal(customer.id));
+
+    const { route } = await Helper.createRoute(user, supplier, [2]);
+
+    res = await request
+      .get('/api/orders?assigned_to_route=1')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(200);
+    res.body.forEach((o) => expect(o.route_id).to.be.a('number'));
+    expect(res.body[0].route_id).equal(route.id);
+    expect(res.body[1].route_id).equal(route.id);
+
+    res = await request
+      .get('/api/orders?assigned_to_route=0')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(200);
+    res.body.forEach((o) => expect(o.route_id).equal(null));
   });
 
   it('GET /api/orders/:id should return a single order', async () => {

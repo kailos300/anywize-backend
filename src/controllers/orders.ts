@@ -1,21 +1,39 @@
 import { Request, Response, NextFunction } from 'express';
+import Sequelize from 'sequelize';
 import createError from 'http-errors';
 import models from '../models';
 import OrdersValidators from '../validators/orders';
+import { extendedQueryString } from '../logic/query';
+
+const query = extendedQueryString({
+  assigned_to_route: {
+    key: 'route_id',
+    func: (val) => {
+      if (val === '1') {
+        return {
+          [Sequelize.Op.not]: null,
+        };
+      }
+
+      return null;
+    },
+  },
+});
 
 export default {
   list: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { user } = req;
       const { limit, offset } = req.query;
+      const { where } = query(req.query);
 
       const { rows, count } = await models.Orders.findAndCountAll({
-        limit: parseInt(limit || 20, 10),
-        offset: parseInt(offset || 0, 10),
-        raw: true,
+        limit: parseInt(<any>limit || 20, 10),
+        offset: parseInt(<any>offset || 0, 10),
         order: [['id', 'DESC']],
         where: {
           supplier_id: user.supplier_id,
+          ...where,
         },
       });
 

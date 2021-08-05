@@ -1,5 +1,6 @@
 import 'mocha';
 import { expect } from 'chai';
+import { DateTime } from 'luxon';
 import Helper from './_helper';
 import models from '../models';
 
@@ -232,6 +233,8 @@ describe('Routes tests', () => {
 
     expect(res.status).equal(200);
     expect(res.body[0].id).equal(route.id);
+    expect(res.body[0].Tour).to.be.an('object');
+    expect(res.body[0].Orders.length).equal(3);
 
     res = await request
       .get('/api/routes?limit=1')
@@ -239,6 +242,40 @@ describe('Routes tests', () => {
 
     expect(res.status).equal(200);
     expect(res.body.length).equal(1);
+    expect(res.body[0].id).equal(route.id);
+
+    res = await request
+      .get('/api/routes?started=0')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(200);
+    expect(res.body[0].id).equal(route.id);
+
+
+    res = await request
+      .get('/api/routes?started=1')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(200);
+    expect(res.body[0]?.id).not.to.be.equal(route.id);
+
+    await models.Routes.update({ start_date: DateTime.now().minus({ days: 1 })}, {
+      where: { id: route.id },
+    });
+
+    res = await request
+      .get('/api/routes?started=1')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(200);
+    expect(res.body[0].id).equal(route.id);
+
+    res = await request
+      .get(`/api/routes?start_date_from=${DateTime.now().minus({ days: 2 })}&start_date_to=${DateTime.now().plus({ days: 1 })}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(200);
+    expect(res.body[0].id).equal(route.id);
   });
 
   it('GET /api/routes/:id should return a route', async () => {

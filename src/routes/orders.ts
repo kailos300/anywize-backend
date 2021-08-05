@@ -54,10 +54,15 @@ router.get('/:id', userHasSupplier, OrdersCtrl.get);
  * @apiName List orders
  * @apiGroup Orders
  * @apiDescription Returns a list of orders where the supplier_id is the same
- * as the currently logged in user
+ * as the currently logged in user. Accepts query parameters to filter orders
+ * that are not yet assigned to a Route: `?assigned_to_route=1` => returns only orders
+ * that have a Route assigned. `?assigned_to_route=0` => returns only orders
+ * that don't have a Route assigned. To return every order omit the param.
+ * Accepts query parameter to filter orders by Customer: `customer_id=1` returns only
+ * orders that belong to the Customer with ID 1
  *
  * @apiParamExample {json} Request-Example:
- *    GET /api/orders?limit=10&offset=0
+ *    GET /api/orders?limit=10&offset=0&assigned_to_route=1&customer_id=1
  *
  *    Returns a header `x-total-count` with the total number of records for pagination
  *
