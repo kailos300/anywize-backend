@@ -190,7 +190,7 @@ describe('Orders tests', () => {
       .get('/api/orders')
       .set('Authorization', `Bearer ${token}`);
 
-    expect(res.status).equal(200);
+    expect(res.status).equal(200);console.log(JSON.stringify(res.body));
     expect(res.body[0].id).equal(order.id);
 
     res = await request
@@ -207,6 +207,7 @@ describe('Orders tests', () => {
 
     expect(res.status).equal(200);
     res.body.forEach((o) => expect(o.customer_id).equal(customer.id));
+    expect(res.body[0].Customer.id).equal(customer.id);
 
     const { route } = await Helper.createRoute(user, supplier, [2]);
 

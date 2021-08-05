@@ -35,6 +35,14 @@ export default {
           supplier_id: user.supplier_id,
           ...where,
         },
+        include: [{
+          model: models.Customers,
+          attributes: ['id', 'name', 'alias'],
+          include: [{
+            model: models.Tours,
+            attributes: ['id', 'name'],
+          }],
+        }],
       });
 
       res.set('x-total-count', count);
@@ -60,6 +68,10 @@ export default {
             'id', 'tour_id', 'tour_position', 'name', 'alias',
             'street', 'street_number', 'city', 'zipcode', 'country', 'email', 'phone',
           ],
+          include: [{
+            model: models.Tours,
+            attributes: ['id', 'name'],
+          }],
         }],
       });
 

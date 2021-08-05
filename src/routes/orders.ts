@@ -67,15 +67,26 @@ router.get('/:id', userHasSupplier, OrdersCtrl.get);
  *    Returns a header `x-total-count` with the total number of records for pagination
  *
  * @apiSuccessExample Success-Response:
- *     [{
+ *   [
+ *     {
  *       "id": 1,
  *       "supplier_id": 1,
  *       "customer_id": 1,
  *       "route_id": null,
- *       "description": "This is the order description for Kilback Inc",
+ *       "description": "This is the order description for Kuvalis Group",
  *       "delivered_at": null,
  *       "number": "number",
- *     }]
+ *       "Customer": {
+ *         "id": 1,
+ *         "name": "Kuvalis Group",
+ *         "alias": "Schoen, Emmerich and Rohan",
+ *         "Tour": {
+ *           "id": 1,
+ *           "name": "Tour: Goyette - Ebert"
+ *         }
+ *       }
+ *     }
+ *   ]
  *
  * @apiErrorExample Unauthenticated:
  *     HTTP/1.1 401
