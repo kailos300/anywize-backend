@@ -10,8 +10,8 @@ export default {
       const { limit, offset } = req.query;
 
       const { rows, count } = await models.Customers.findAndCountAll({
-        limit: parseInt(limit || 20, 10),
-        offset: parseInt(offset || 0, 10),
+        limit: parseInt(<any>limit || 2000, 10),
+        offset: parseInt(<any>offset || 0, 10),
         where: {
           active: true,
           supplier_id: user.supplier_id,

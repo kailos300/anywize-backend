@@ -90,7 +90,7 @@ export function parseFilterDates(query: any) {
   }
 
   if (query.end_date_from || query.end_date_to) {
-    where.date_to = {};
+    where.end_date = {};
   }
 
   if (query.start_date_from) {

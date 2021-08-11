@@ -220,6 +220,7 @@ describe('Drivers tests', () => {
     expect(res.body.id).equal(route.id);
     expect(res.body.Tour.id).equal(newTour.id);
     expect(res.body.Tour.TransportAgent.id).equal(newTransportAgent.id);
+    expect(res.body.Tour.Supplier.id).equal(supplier.id);
   });
 
   it('PUT /api/drivers/route should set the driver name and phone to the route', async () => {

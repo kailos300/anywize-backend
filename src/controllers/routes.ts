@@ -39,11 +39,11 @@ export default {
       const { user } = req;
       const { limit, offset } = req.query;
       const { where } = query(req.query);
-      const { start_date_to, start_date_from, ...rest } = where;
+      const { start_date_to, start_date_from, end_date_from, end_date_to, ...rest } = where;
       const whereDates = parseFilterDates(req.query);
 
       const { rows, count } = await models.Routes.findAndCountAll({
-        limit: parseInt(<any>limit || 20, 10),
+        limit: parseInt(<any>limit || 2000, 10),
         offset: parseInt(<any>offset || 0, 10),
         where: {
           tour_id: {

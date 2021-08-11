@@ -7,9 +7,10 @@ export default {
       const { limit, offset } = req.query;
 
       const { rows, count } = await models.Suppliers.findAndCountAll({
-        limit: parseInt(limit || 20, 10),
-        offset: parseInt(offset || 0, 10),
+        limit: parseInt(<any>limit || 20, 10),
+        offset: parseInt(<any>offset || 0, 10),
         attributes: ['id', 'name', 'alias', 'created_at', 'active'],
+        order: [['id', 'DESC']],
         raw: true,
       });
 

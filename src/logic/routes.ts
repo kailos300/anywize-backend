@@ -53,6 +53,20 @@ export default {
         include: [{
           model: models.TransportAgents,
           attributes: ['id', 'alias', 'name'],
+        }, {
+          model: models.Suppliers,
+          attributes: [
+            'id',
+            'name',
+            'alias',
+            'street',
+            'street_number',
+            'city',
+            'zipcode',
+            'country',
+            'email',
+            'phone',
+          ],
         }],
       }, {
         model: models.Stops,

@@ -263,6 +263,10 @@ describe('Orders tests', () => {
       country: customer.country,
       email: customer.email,
       phone: customer.phone,
+      Tour: {
+        id: tour.id,
+        name: tour.name,
+      },
     });
   });
 

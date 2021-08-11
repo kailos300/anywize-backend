@@ -28,7 +28,7 @@ export default {
       const { where } = query(req.query);
 
       const { rows, count } = await models.Orders.findAndCountAll({
-        limit: parseInt(<any>limit || 20, 10),
+        limit: parseInt(<any>limit || 2000, 10),
         offset: parseInt(<any>offset || 0, 10),
         order: [['id', 'DESC']],
         where: {
@@ -36,6 +36,7 @@ export default {
           ...where,
         },
         include: [{
+          required: true,
           model: models.Customers,
           attributes: ['id', 'name', 'alias'],
           include: [{

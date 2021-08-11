@@ -128,6 +128,18 @@ router.post('/login', DriversCtrl.authenticate);
  *          "id": 1,
  *          "name": "Name - Breitenberg and Sons",
  *          "alias": "Alias - Olson - Breitenberg",
+ *        },
+ *        "Supplier": {
+ *          id: 1,
+ *          name: 'Name - Kerluke, Hoeger and Keeling',
+ *          alias: 'Alias - Waters LLC',
+ *          street: 'street',
+ *          street_number: '123123',
+ *          city: 'City',
+ *          zipcode: '123',
+ *          country: 'AR',
+ *          email: 'sedrick85@gmail.com',
+ *          phone: '123123123'
  *        }
  *      }
  *    }
@@ -283,6 +295,18 @@ router.put('/route/end', isDriverAuthenticated, DriversCtrl.endRoute);
  *          "id": 1,
  *          "name": "Name - Breitenberg and Sons",
  *          "alias": "Alias - Olson - Breitenberg",
+ *        }
+ *        "Supplier": {
+ *          id: 1,
+ *          name: 'Name - Kerluke, Hoeger and Keeling',
+ *          alias: 'Alias - Waters LLC',
+ *          street: 'street',
+ *          street_number: '123123',
+ *          city: 'City',
+ *          zipcode: '123',
+ *          country: 'AR',
+ *          email: 'sedrick85@gmail.com',
+ *          phone: '123123123'
  *        }
  *      }
  *    }
