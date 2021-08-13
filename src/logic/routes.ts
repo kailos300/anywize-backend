@@ -99,6 +99,9 @@ export default {
         model: models.Tours,
         include: [{
           model: models.TransportAgents,
+        }, {
+          model: models.Suppliers,
+          attributes: ['id', 'name', 'coordinates'],
         }],
       }, {
         model: models.Orders,
@@ -182,11 +185,16 @@ export default {
     }
 
     const ordered: CustomerWithOrders[] = orderBy(customers, ['tour_position'], ['asc']).map((o) => o.toJSON());
+    const count = await models.Routes.count({
+      where: { tour_id: body.tour_id },
+    });
+
     const route = await models.Routes.create({
       tour_id: body.tour_id,
       pathway: ordered,
       code: randomString.generate({ length: 4, charset: 'alphabetic', capitalization: 'uppercase' }),
       password: randomString.generate({ length: 4, charset: 'numeric' }),
+      uuid: `${tour.id}.${count + 1}`,
     });
 
     await models.Orders.update({

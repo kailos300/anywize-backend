@@ -35,6 +35,13 @@ export default function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    coordinates: {
+      type: DataTypes.GEOMETRY('POINT'),
+      defaultValue: () => ({
+        type: 'Point',
+        coordinates: [0, 0],
+      }),
+    },
     active: {
       type: DataTypes.BOOLEAN,
       defaultValue: true,

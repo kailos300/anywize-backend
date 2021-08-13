@@ -17,7 +17,7 @@ const router = Router();
  *    {
  *      "id": 4,
  *      "tour_id": 3,
- *      "uuid": "3f1943d0-c9eb-11eb-9585-374befa75bfc",
+ *      "uuid": "3.4",
  *      "pathway": [
  *        {
  *          "id": 7,
@@ -116,6 +116,14 @@ const router = Router();
  *          "street_number": "123123",
  *          "city": "City",
  *          "country": "AR"
+ *        },
+ *        "Supplier": {
+ *          "id": 1,
+ *          "name": "Sup",
+ *          "coordinates": {
+ *            "type": "Point",
+ *            "coordinates": [0, 0]
+ *          }
  *        }
  *      },
  *      "Orders": [
@@ -208,6 +216,7 @@ router.get('/:id', userHasSupplier, RoutesCtrl.get);
  * @apiSuccessExample Success-Response:
  *     [{
  *       id: 1,
+ *       "uuid": "3.4",
  *       start_date: null,
  *       end_date: null,
  *       code: 'EVHC',

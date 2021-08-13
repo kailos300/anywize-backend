@@ -53,7 +53,7 @@ export default {
           ...whereDates,
         },
         order: [['id', 'DESC']],
-        attributes: ['id', 'start_date', 'end_date', 'code', 'password', 'driver_name', 'driver_phone'],
+        attributes: ['id', 'uuid', 'start_date', 'end_date', 'code', 'password', 'driver_name', 'driver_phone', 'pathway'],
         include: [{
           model: models.Tours,
           attributes: ['id', 'name'],
