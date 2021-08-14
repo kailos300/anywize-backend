@@ -4,11 +4,16 @@ import bodyParser from 'body-parser';
 import Debug from 'debug';
 import cors from 'cors';
 import compression from 'compression';
+import * as Sentry from "@sentry/node";
 import initializePassport from './passport';
 const passport = require('passport');
 
 const debug = Debug('anywize');
 const app = express();
+
+Sentry.init({
+  dsn: process.env.ANYWIZE_SENTRY_DSN,
+});
 
 declare global {
   namespace Express {
@@ -21,6 +26,7 @@ declare global {
 app.disable('x-powered-by');
 app.use(compression());
 
+app.use(Sentry.Handlers.requestHandler());
 app.use(bodyParser.json({ limit: '1mb' }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
@@ -69,6 +75,8 @@ app.use((req, res, next) => {
   err.status = 404;
   next(err);
 });
+
+app.use(Sentry.Handlers.errorHandler());
 
 // Error handler
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
