@@ -150,7 +150,11 @@ export default {
 
         res.setHeader('Content-Disposition', `attachment; filename=${stop.Customer.alias}.pdf`);
 
-        pdf.create(str).toStream(function(err, stream){
+        pdf.create(str).toStream(function(err, stream) {
+          if (err) {
+            throw err;
+          }
+
           stream.pipe(res);
         });
        })
