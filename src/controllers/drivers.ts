@@ -107,8 +107,20 @@ export default {
 
       await DriversValidators.addNavigation(body);
 
+      const { customer_id, navigation } = body;
+
+
+
       await models.RoutesNavigations.create({
-        ...body,
+        customer_id,
+        navigation: {
+          ...navigation,
+          routes: navigation.routes.map((route) => {
+            const { legs, ...rest } = route;
+
+            return rest;
+          }),
+        },
         route_id: id,
       });
 

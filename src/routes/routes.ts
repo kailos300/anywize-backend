@@ -189,6 +189,8 @@ const router = Router();
  */
 router.get('/:id', userHasSupplier, RoutesCtrl.get);
 
+router.get('/:id/proof-of-delivery/:customerId', userHasSupplier, RoutesCtrl.proofOfDelivery);
+
 /**
  * @api {get} /api/routes List routes
  * @apiName List routes

@@ -383,6 +383,7 @@ describe('Drivers tests', () => {
         customer_id: customers[0].customer.id,
         navigation: {
           a: 1,
+          routes: [],
           b: { a: 1, b: 2, c: 2},
           c: [],
         },
@@ -400,6 +401,7 @@ describe('Drivers tests', () => {
       a: 1,
       b: { a: 1, b: 2, c: 2},
       c: [],
+      routes: [],
     });
   });
 

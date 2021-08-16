@@ -1,8 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import createError from 'http-errors';
 import Sequelize from 'sequelize';
+import * as ejs from 'ejs';
+import * as pdf from 'html-pdf';
+import { DateTime } from 'luxon';
 import models from '../models';
 import RoutesLogic from '../logic/routes';
+import S3Logic from '../logic/s3';
 import RoutesValidators from '../validators/routes';
 import { parseFilterDates, extendedQueryString } from '../logic/query';
 
@@ -84,6 +88,72 @@ export default {
       });
 
       return res.send(route);
+    } catch (err) {
+      return next(err);
+    }
+  },
+  proofOfDelivery: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id, customerId } = req.params;
+      const { user } = req;
+
+      const route = await models.Routes.findOne({
+        where: {
+          id,
+          tour_id: {
+            [Sequelize.Op.in]: models.sequelize.literal(`(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`),
+          },
+        },
+        attributes: ['id'],
+        raw: true,
+      });
+
+      if (!route) {
+        throw createError(404, 'NOT_FOUND');
+      }
+
+      const record = await models.Stops.findOne({
+        where: {
+          customer_id: customerId,
+          route_id: route.id,
+        },
+        include: [{
+          model: models.Customers,
+          required: true,
+          include: [{
+            model: models.Orders,
+            required: true,
+            where: {
+              route_id: route.id,
+            },
+            attributes: ['id', 'number', 'description'],
+          }],
+        }],
+      });
+
+      if (!record) {
+        throw createError(404, 'NOT_FOUND');
+      }
+
+      const stop = {
+        ...record.toJSON(),
+        ...record,
+        signature_file: record.signature_file ? S3Logic.getSignedUrl(record.signature_file) : null,
+        pictures: record.pictures.map((p) => S3Logic.getSignedUrl(p)),
+        delivery_date_formatted: DateTime.fromISO(record.time.toISOString(), { zone: 'Europe/Berlin' }).toFormat('dd.MM.yyyy HH:mm'),
+      };
+
+      ejs.renderFile(`${process.cwd()}/templates/proof-of-delivery.ejs`, { stop }, {}, (err, str) => {
+        if (err) {
+          throw err;
+        }
+
+        res.setHeader('Content-Disposition', `attachment; filename=${stop.Customer.alias}.pdf`);
+
+        pdf.create(str).toStream(function(err, stream){
+          stream.pipe(res);
+        });
+       })
     } catch (err) {
       return next(err);
     }

@@ -103,21 +103,6 @@ export default {
           model: models.Suppliers,
           attributes: ['id', 'name', 'coordinates'],
         }],
-      }, {
-        model: models.Orders,
-        required: false,
-        attributes: ['id', 'delivered_at'],
-      }, {
-        model: models.Stops,
-        required: false,
-      }, {
-        model: models.DriversLocations,
-        attributes: ['location', 'created_at'],
-        required: false,
-      }, {
-        model: models.RoutesNavigations,
-        attributes: ['customer_id', 'navigation', 'created_at'],
-        required: false,
       }],
     });
 
@@ -125,11 +110,47 @@ export default {
       throw createError(404, 'NOT_FOUND');
     }
 
+    const orders = await models.Orders.findAll({
+      where: {
+        route_id: route.id,
+      },
+      attributes: ['id', 'delivered_at'],
+      raw: true,
+    });
+
+    const stops = await models.Stops.findAll({
+      where: {
+        route_id: route.id,
+      },
+      raw: true,
+    })
+
+    const dl = await models.DriversLocations.findAll({
+      where: {
+        route_id: route.id,
+      },
+      limit: 1,
+      order: [['id', 'DESC']],
+      attributes: ['location', 'created_at'],
+      raw: true,
+    });
+
+    const rn = await models.RoutesNavigations.findAll({
+      where: {
+        route_id: route.id,
+      },
+      attributes: ['customer_id', 'navigation', 'created_at'],
+      raw: true,
+    });
+
     const asJson: FullRoute = route.toJSON();
 
     return {
       ...asJson,
-      Stops: asJson.Stops.map((stop) => {
+      DriversLocations: dl,
+      RoutesNavigations: rn,
+      Orders: orders,
+      Stops: stops.map((stop) => {
         return {
           ...stop,
           signature_file: stop.signature_file ? S3Logic.getSignedUrl(stop.signature_file) : null,
