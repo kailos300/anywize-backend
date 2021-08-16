@@ -1,8 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import createError from 'http-errors';
 import Sequelize from 'sequelize';
+import stream from 'stream';
 import * as ejs from 'ejs';
 import * as pdf from 'html-pdf';
+import * as PDF from 'html-pdf-node';
 import { DateTime } from 'luxon';
 import models from '../models';
 import RoutesLogic from '../logic/routes';
@@ -150,12 +152,14 @@ export default {
 
         res.setHeader('Content-Disposition', `attachment; filename=${stop.Customer.alias}.pdf`);
 
-        pdf.create(str).toStream(function(err, stream) {
-          if (err) {
-            throw err;
-          }
+        PDF.generatePdf({ content: str }, { format: 'A4' }).then((buff) => {
+          const readStream = new stream.PassThrough();
+          readStream.end(buff);
 
-          stream.pipe(res);
+          // response.set('Content-disposition', 'attachment; filename=' + fileName);
+          // response.set('Content-Type', 'text/plain');
+
+          readStream.pipe(res);
         });
        })
     } catch (err) {
