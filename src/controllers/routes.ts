@@ -81,13 +81,14 @@ export default {
     try {
       const { id } = req.params;
       const { user } = req;
+      const { allDriverLocations } = req.query;
 
       const route = await RoutesLogic.get({
         id,
         tour_id: {
           [Sequelize.Op.in]: models.sequelize.literal(`(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`),
         },
-      });
+      }, !!allDriverLocations);
 
       return res.send(route);
     } catch (err) {

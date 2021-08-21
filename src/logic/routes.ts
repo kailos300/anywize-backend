@@ -6,7 +6,7 @@ import models from '../models';
 import S3Logic from './s3';
 
 export default {
-  markOrdersAsDelivered: async (uuid: string, customer_id: number): Promise<any> => {
+  markOrdersAsDelivered: async (uuid: string, customer_id: number, stop: Stop): Promise<any> => {
     const route = await models.Routes.findOne({
       where: { uuid },
       attributes: ['id', 'start_date', 'end_date', 'pathway'],
@@ -34,6 +34,7 @@ export default {
       ...pathway.slice(0, index),
       {
         ...pathway[index],
+        goods_back: stop.goods_back ? true : false,
         Orders: pathway[index].Orders.map((o) => ({
           ...o,
           delivered_at: now,
@@ -92,7 +93,7 @@ export default {
       current_pathway_index,
     };
   },
-  get: async (where: any): Promise<FullRoute> => {
+  get: async (where: any, allDriverLocations = false): Promise<FullRoute> => {
     const route = await models.Routes.findOne({
       where,
       include: [{
@@ -129,7 +130,7 @@ export default {
       where: {
         route_id: route.id,
       },
-      limit: 1,
+      limit: allDriverLocations ? 100000 : 1,
       order: [['id', 'DESC']],
       attributes: ['location', 'created_at'],
       raw: true,

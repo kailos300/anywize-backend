@@ -50,6 +50,7 @@ const router = Router();
  *              4.14001
  *            ]
  *          },
+ *          "goods_back": false,
  *          "street_number": "123123",
  *          "tour_position": 1
  *        },
@@ -78,6 +79,7 @@ const router = Router();
  *              "supplier_id": 1
  *            }
  *          ],
+ *          "goods_back": true,
  *          "street": "st",
  *          "country": "BR",
  *          "tour_id": 3,
@@ -298,6 +300,7 @@ router.get('/', userHasSupplier, RoutesCtrl.list);
  *          },
  *          "email": "theodora.terry65@hotmail.com",
  *          "phone": "123321312312",
+ *          "goods_back": false,
  *          "Orders": [
  *            {
  *              "id": 1,

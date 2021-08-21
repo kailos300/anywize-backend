@@ -442,6 +442,7 @@ describe('Drivers tests', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.status).equal(200);
+    expect(res.body.pathway[0].goods_back).equal(false);
     expect(res.body.current_pathway_index).equal(1);
     expect(res.body.pathway[res.body.current_pathway_index].id).equal(customers[1].customer.id);
     expect(res.body.pathway[res.body.current_pathway_index].Orders.length).equal(1);
@@ -517,7 +518,7 @@ describe('Drivers tests', () => {
         reason: null,
         driver_name: 'John',
         driver_phone: '123123123',
-        goods_back: false,
+        goods_back: true,
       })
       .set('Authorization', `Bearer ${token}`);
 
@@ -536,6 +537,7 @@ describe('Drivers tests', () => {
 
     dbRoute = await models.Routes.findByPk(route.id);
     expect(dbRoute.pathway[0].id).equal(customers[0].customer.id);
+    expect(dbRoute.pathway[2].goods_back).equal(true);
     dbRoute.pathway[0].Orders.forEach((o) => expect(o.delivered_at).not.to.be.equal(null));
     dbRoute.pathway[1].Orders.forEach((o) => expect(o.delivered_at).not.to.be.equal(null));
     dbRoute.pathway[2].Orders.forEach((o) => expect(o.delivered_at).not.to.be.equal(null));
