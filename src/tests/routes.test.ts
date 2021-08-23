@@ -107,6 +107,9 @@ describe('Routes tests', () => {
       street: customer.street,
       street_number: customer.street_number,
       city: customer.city,
+      contact_name: customer.contact_name,
+      contact_surname: customer.contact_surname,
+      contact_salutation: customer.contact_salutation,
       zipcode: customer.zipcode,
       country: customer.country,
       coordinates: customer.coordinates,
@@ -152,6 +155,9 @@ describe('Routes tests', () => {
       zipcode: customerThree.zipcode,
       country: customerThree.country,
       coordinates: customerThree.coordinates,
+      contact_name: customerThree.contact_name,
+      contact_surname: customerThree.contact_surname,
+      contact_salutation: customerThree.contact_salutation,
       email: customerThree.email,
       phone: customerThree.phone,
       deposit_agreement: customerThree.deposit_agreement,
@@ -182,6 +188,9 @@ describe('Routes tests', () => {
       zipcode: customerTwo.zipcode,
       country: customerTwo.country,
       coordinates: customerTwo.coordinates,
+      contact_name: customerTwo.contact_name,
+      contact_surname: customerTwo.contact_surname,
+      contact_salutation: customerTwo.contact_salutation,
       email: customerTwo.email,
       phone: customerTwo.phone,
       deposit_agreement: customerTwo.deposit_agreement,
@@ -234,7 +243,6 @@ describe('Routes tests', () => {
     expect(res.status).equal(200);
     expect(res.body[0].id).equal(route.id);
     expect(res.body[0].Tour).to.be.an('object');
-    expect(res.body[0].Orders.length).equal(3);
 
     res = await request
       .get('/api/routes?limit=1')

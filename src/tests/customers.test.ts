@@ -1,6 +1,7 @@
 import 'mocha';
 import { expect } from 'chai';
 import Helper from './_helper';
+import { hasUncaughtExceptionCaptureCallback } from 'process';
 
 const { request } = Helper;
 
@@ -69,6 +70,9 @@ describe('Customers tests', () => {
       zipcode: '"zipcode" is required',
       country: '"country" is required',
       email: '"email" is required',
+      contact_salutation: '"contact_salutation" is required',
+      contact_name: '"contact_name" is required',
+      contact_surname: '"contact_surname" is required',
       phone: '"phone" is required',
       latitude: '"latitude" is required',
       longitude: '"longitude" is required',
@@ -86,6 +90,9 @@ describe('Customers tests', () => {
         city: 'city',
         zipcode: 'zip',
         country: 'AR',
+        contact_salutation: 'DR',
+        contact_name: 'Pepe',
+        contact_surname: 'Argento',
         email: 'bla@bla.com',
         phone: '123123123',
         latitude: 10.00001,
@@ -110,6 +117,9 @@ describe('Customers tests', () => {
         city: 'city',
         zipcode: 'zip',
         country: 'AR',
+        contact_salutation: 'DR',
+        contact_name: 'Pepe',
+        contact_surname: 'Argento',
         email: 'bla@bla.com',
         phone: '123123123',
         latitude: 10.00001,
@@ -131,6 +141,7 @@ describe('Customers tests', () => {
     expect(res.body.country).equal('AR');
     expect(res.body.email).equal('bla@bla.com');
     expect(res.body.phone).equal('123123123');
+    expect(res.body.contact_name).equal('Pepe');
   });
 
   it('PUT /api/customers/:id should update a customer', async () => {
@@ -149,6 +160,9 @@ describe('Customers tests', () => {
         city: 'city',
         zipcode: 'zip',
         country: 'AR',
+        contact_salutation: 'DR',
+        contact_name: 'Pepe',
+        contact_surname: 'Arg',
         email: 'bla@bla.com',
         phone: '123123123',
         latitude: 10.00001,
@@ -172,6 +186,9 @@ describe('Customers tests', () => {
         city: 'city',
         zipcode: 'zip',
         country: 'AR',
+        contact_salutation: 'DR',
+        contact_name: 'Pepe',
+        contact_surname: 'Arg',
         email: 'bla@bla.com',
         phone: '123123123',
         latitude: 10.00001,
@@ -196,6 +213,9 @@ describe('Customers tests', () => {
         city: 'city',
         zipcode: 'zip',
         country: 'AR',
+        contact_salutation: 'DR',
+        contact_name: 'Pepe',
+        contact_surname: 'Arg',
         email: 'bla@bla.com',
         phone: '123123123',
         latitude: 10.00001,
@@ -257,6 +277,9 @@ describe('Customers tests', () => {
     expect(res.body.street_number).equal(customer.street_number);
     expect(res.body.city).equal(customer.city);
     expect(res.body.zipcode).equal(customer.zipcode);
+    expect(res.body.contact_name).equal(customer.contact_name);
+    expect(res.body.contact_salutation).equal(customer.contact_salutation);
+    expect(res.body.contact_surname).equal(customer.contact_surname);
     expect(res.body.country).equal(customer.country);
     expect(res.body.email).equal(customer.email);
     expect(res.body.phone).equal(customer.phone);

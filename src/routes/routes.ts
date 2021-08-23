@@ -24,6 +24,9 @@ const router = Router();
  *          "city": "City 2",
  *          "name": "Bruen, Halvorson and Carter",
  *          "alias": "Klein Inc",
+ *          "contact_salutation": 'MR',
+ *          "contact_name": 'John',
+ *          "contact_surname": 'Doe',
  *          "email": "macy61@yahoo.com",
  *          "phone": "123321312312",
  *          "deposit_agreement": 'KEY_BOX', // 'BRING_KEY' | 'NONE'
@@ -59,6 +62,9 @@ const router = Router();
  *          "city": "City 2",
  *          "name": "Sipes - Okuneva",
  *          "alias": "Thompson, Berge and Stark",
+ *          "contact_salutation": 'MR',
+ *          "contact_name": 'John',
+ *          "contact_surname": 'Doe',
  *          "email": "madisyn.ullrich86@hotmail.com",
  *          "phone": "123321312312",
  *          "deposit_agreement": 'KEY_BOX', // 'BRING_KEY' | 'NONE'
@@ -228,26 +234,6 @@ router.get('/:id/proof-of-delivery/:customerId', userHasSupplier, RoutesCtrl.pro
  *       driver_name: null,
  *       driver_phone: null,
  *       Tour: { id: 2, name: 'Tour: Crona and Sons' },
- *       Orders: [
- *         {
- *           id: 1,
- *           customer_id: 1,
- *           description: 'This is the order description for Keebler - Volkman',
- *           delivered_at: null
- *         },
- *         {
- *           id: 2,
- *           customer_id: 2,
- *           description: 'This is the order description for Stiedemann, Little and Cartwright',
- *           delivered_at: null
- *         },
- *         {
- *           id: 3,
- *           customer_id: 3,
- *           description: 'This is the order description for Walter, Tillman and Mante',
- *           delivered_at: null
- *         }
- *       ]
  *     }]
  *
  * @apiErrorExample Unauthenticated:
@@ -298,6 +284,9 @@ router.get('/', userHasSupplier, RoutesCtrl.list);
  *              4.14001
  *            ]
  *          },
+ *          "contact_salutation": 'MR',
+ *          "contact_name": 'John',
+ *          "contact_surname": 'Doe',
  *          "email": "theodora.terry65@hotmail.com",
  *          "phone": "123321312312",
  *          "goods_back": false,

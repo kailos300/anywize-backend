@@ -27,6 +27,9 @@ const router = Router();
  *      city: 'City 2',
  *      zipcode: '123',
  *      country: 'BR',
+ *      contact_salutation: 'MR',
+ *      contact_name: 'John',
+ *      contact_surname: 'Doe',
  *      email: 'payton54@gmail.com',
  *      phone: '123321312312',
  *      sms_notifications: false,
@@ -117,6 +120,9 @@ router.get('/', userHasSupplier, CustomersCtrl.list);
  *        city: 'city', // required
  *        zipcode: 'zip', // required
  *        country: 'AR', // required
+ *        contact_salutation: 'MR', // required
+ *        contact_name: 'John', // required
+ *        contact_surname: 'Doe', // required
  *        email: 'bla@bla.com', // required
  *        phone: '123123123', // required
  *        latitude: 10.00002, // required
@@ -139,6 +145,9 @@ router.get('/', userHasSupplier, CustomersCtrl.list);
  *       city: 'City 2',
  *       zipcode: '123',
  *       country: 'BR',
+ *       contact_salutation: 'MR',
+ *       contact_name: 'John',
+ *       contact_surname: 'Doe',
  *       email: 'kelli_luettgen@yahoo.com',
  *       phone: '123321312312',
  *       sms_notifications: 0,
@@ -200,6 +209,9 @@ router.post('/', userHasSupplier, CustomersCtrl.create);
  *        city: 'city', // required
  *        zipcode: 'zip', // required
  *        country: 'AR', // required
+ *        contact_salutation: 'MR', // required
+ *        contact_name: 'John', // required
+ *        contact_surname: 'Doe', // required
  *        email: 'bla@bla.com', // required
  *        phone: '123123123', // required
  *        latitude: 10.0002, // required
@@ -222,6 +234,9 @@ router.post('/', userHasSupplier, CustomersCtrl.create);
  *       city: 'City 2',
  *       zipcode: '123',
  *       country: 'BR',
+ *       contact_salutation: 'MR',
+ *       contact_name: 'John',
+ *       contact_surname: 'Doe',
  *       email: 'kelli_luettgen@yahoo.com',
  *       phone: '123321312312',
  *       sms_notifications: 0,

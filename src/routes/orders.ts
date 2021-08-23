@@ -5,6 +5,47 @@ import userHasSupplier from '../middlewares/userHasSupplier';
 const router = Router();
 
 /**
+ * @api {get} /api/orders/delivered/:from/:to List delivered orders
+ * @apiName List delivered orders
+ * @apiGroup Orders
+ * @apiDescription Returns a list of orders that were delivered, grouped by Customer, where the supplier_id is the same
+ * as the currently logged in user. Requires two params specifying the dates range in which it
+ * was delivered
+ *
+ * @apiParamExample {json} Request-Example:
+ *    GET /api/orders/delivered/2021-01-01/2021-02-01
+ *
+ * @apiSuccessExample Success-Response:
+ *   [
+ *     {
+ *       "id": 1,
+ *       "name": "Kuvalis Group",
+ *       "alias": "Schoen, Emmerich and Rohan",
+ *       "Tour": {
+ *         "id": 1,
+ *         "name": "Tour: Goyette - Ebert"
+ *       },
+ *       "Orders": [{
+ *         "id": 1,
+ *         "supplier_id": 1,
+ *         "customer_id": 1,
+ *         "route_id": null,
+ *         "description": "This is the order description for Kuvalis Group",
+ *         "delivered_at": null,
+ *         "number": "number",
+ *       }]
+ *     }
+ *   ]
+ *
+ * @apiErrorExample Unauthenticated:
+ *     HTTP/1.1 401
+ *
+ * @apiErrorExample Forbidden:
+ *     HTTP/1.1 403
+ */
+ router.get('/delivered/:from/:to', userHasSupplier, OrdersCtrl.delivered);
+
+/**
  * @api {get} /api/orders/:id Get single order
  * @apiName Get single order
  * @apiGroup Orders

@@ -22,6 +22,7 @@ export default {
             'country',
             'email',
             'phone',
+            'coordinates',
           ],
           raw: true,
         });

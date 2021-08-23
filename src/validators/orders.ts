@@ -7,7 +7,13 @@ const CreateSchema = Joi.object().keys({
   number: Joi.string().optional().allow(null, ''),
 });
 
+const ListDeliveredSchema = Joi.object().keys({
+  from: Joi.date().iso().required(),
+  to: Joi.date().iso().required(),
+});
+
 export default {
   create: (data) => Validate(data, CreateSchema),
   update: (data) => Validate(data, CreateSchema),
+  delivered: (data) => Validate(data, ListDeliveredSchema),
 };

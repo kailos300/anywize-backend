@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import Sequelize from 'sequelize';
 import createError from 'http-errors';
+import { DateTime } from 'luxon';
 import models from '../models';
 import OrdersValidators from '../validators/orders';
 import { extendedQueryString } from '../logic/query';
@@ -21,6 +22,50 @@ const query = extendedQueryString({
 });
 
 export default {
+  delivered: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { user } = req;
+      const { from, to } = req.params;
+
+      await OrdersValidators.delivered({ from, to });
+
+      const customers = await models.Customers.findAll({
+        attributes: ['id', 'name', 'alias'],
+        where: {
+          supplier_id: user.supplier_id,
+          one: Sequelize.literal('`Orders->Route->Stops`.`customer_id` = `Customers`.`id`'),
+        },
+        include: [{
+          model: models.Orders,
+          where: {
+            delivered_at: {
+              [Sequelize.Op.not]: null,
+              [Sequelize.Op.gte]: DateTime.fromISO(from).startOf('day').toJSDate(),
+              [Sequelize.Op.lte]: DateTime.fromISO(to).endOf('day').toJSDate(),
+            },
+          },
+          attributes: ['id', 'delivered_at', 'description', 'number'],
+          required: true,
+          include: [{
+            model: models.Routes,
+            attributes: ['id', 'uuid'],
+            include: [{
+              model: models.Stops,
+              attributes: ['meet_customer'],
+            }],
+          }],
+        }, {
+          model: models.Tours,
+          attributes: ['id', 'name'],
+        }],
+        logging: console.log,
+      });
+
+      return res.send(customers);
+    } catch (err) {
+      return next(err);
+    }
+  },
   list: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { user } = req;

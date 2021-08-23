@@ -52,6 +52,15 @@ export default function(sequelize, DataTypes) {
         coordinates: [0, 0],
       }),
     },
+    contact_salutation: {
+      type: DataTypes.STRING,
+    },
+    contact_name: {
+      type: DataTypes.STRING,
+    },
+    contact_surname: {
+      type: DataTypes.STRING,
+    },
     email: {
       type: DataTypes.STRING,
     },

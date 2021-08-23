@@ -61,6 +61,9 @@ declare type Customer = {
   number: string;
   name: string;
   alias: string;
+  contact_salutation: string;
+  contact_name: string;
+  contact_surname: string;
   email: string;
   phone: string;
   sms_notifications: boolean;

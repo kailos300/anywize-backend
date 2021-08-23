@@ -63,9 +63,6 @@ export default {
         include: [{
           model: models.Tours,
           attributes: ['id', 'name'],
-        }, {
-          model: models.Orders,
-          attributes: ['id', 'customer_id', 'description', 'delivered_at'],
         }],
         distinct: true,
       });
