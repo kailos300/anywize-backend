@@ -10,7 +10,7 @@
     "start": "node dist/index.js",
     "dev": "npm run clean && NODE_ENV=dev nodemon",
     "clean": "rimraf dist",
-    "build": "npm run clean && mkdir -p dist && yarn etsc --config=esbuild.config.js && npm run apidoc",
+    "build": "npm run clean && mkdir -p dist && node ./node_modules/esbuild-node-tsc/dist/index --config=esbuild.config.js && npm run apidoc",
     "test": "yarn truncateTestDatabase && yarn dbMigrateTest && NODE_ENV=test ts-mocha --require dotenv/config dotenv_config_path=.test.env --require ./src/index.ts 'src/tests/**/*.{js,ts}' -t 70000 --exit",
     "test:coverage": "yarn truncateTestDatabase && yarn dbMigrateTest && NODE_ENV=test nyc ts-mocha --require dotenv/config dotenv_config_path=.test.env --require ./src/index.ts 'src/tests/**/*.{js,ts}' -t 70000 --exit",
     "dbMigrateTest": "NODE_ENV=test node -r dotenv/config -e 'require(\"./postgrator/postgrator.js\").migrate()' dotenv_config_path=.test.env",
@@ -48,7 +48,8 @@
     "randomstring": "^1.2.1",
     "rimraf": "^3.0.2",
     "sequelize": "^6.6.2",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "esbuild-node-tsc": "^1.2.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.18",
@@ -63,7 +64,6 @@
     "chai": "^4.3.4",
     "codecov": "3.8.1",
     "dotenv": "^8.2.0",
-    "esbuild-node-tsc": "^1.2.0",
     "eslint": "^7.20.0",
     "eslint-config-airbnb-typescript": "^12.3.1",
     "eslint-plugin-import": "^2.22.0",
