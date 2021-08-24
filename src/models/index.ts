@@ -8,12 +8,27 @@ const basename = path.basename(module.filename);
 const Debug = debug('anywize:sequelize');
 const models: any = {};
 
+// sequelize hack, piece of shit
+const wkx = require('wkx');
+Sequelize.GEOMETRY.prototype._stringify = function _stringify(value, options) {
+  return `ST_GeomFromText(${options.escape(wkx.Geometry.parseGeoJSON(value).toWkt())})`;
+}
+Sequelize.GEOMETRY.prototype._bindParam = function _bindParam(value, options) {
+  return `ST_GeomFromText(${options.bindParam(wkx.Geometry.parseGeoJSON(value).toWkt())})`;
+}
+Sequelize.GEOGRAPHY.prototype._stringify = function _stringify(value, options) {
+  return `ST_GeomFromText(${options.escape(wkx.Geometry.parseGeoJSON(value).toWkt())})`;
+}
+Sequelize.GEOGRAPHY.prototype._bindParam = function _bindParam(value, options) {
+  return `ST_GeomFromText(${options.bindParam(wkx.Geometry.parseGeoJSON(value).toWkt())})`;
+}
 
 const dbConfig = {
   username: getenv('ANYWIZE_MYSQL_USERNAME'),
   password: getenv('ANYWIZE_MYSQL_PASSWORD'),
   database: getenv('ANYWIZE_MYSQL_DATABASE'),
   host: getenv('ANYWIZE_MYSQL_HOST'),
+  port: getenv('ANYWIZE_MYSQL_PORT', 3306),
   dialect: 'mysql',
   logging: false,
 };
