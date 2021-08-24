@@ -15,7 +15,7 @@
     "test:coverage": "yarn truncateTestDatabase && yarn dbMigrateTest && NODE_ENV=test nyc ts-mocha --require dotenv/config dotenv_config_path=.test.env --require ./src/index.ts 'src/tests/**/*.{js,ts}' -t 70000 --exit",
     "dbMigrateTest": "NODE_ENV=test node -r dotenv/config -e 'require(\"./postgrator/postgrator.js\").migrate()' dotenv_config_path=.test.env",
     "truncateTestDatabase": "NODE_ENV=test node -r dotenv/config -e 'require(\"./postgrator/postgrator.js\").truncateDatabase()' dotenv_config_path=.test.env",
-    "apidoc": "apidoc -i \"./src/routes\" -o apidoc/"
+    "apidoc": "node ./node_modules/apidoc/bin/apidoc -i \"./src/routes\" -o apidoc/"
   },
   "dependencies": {
     "@sentry/node": "^6.11.0",
