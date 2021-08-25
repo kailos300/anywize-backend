@@ -148,18 +148,16 @@ export default {
           throw err;
         }
 
-        res.setHeader('Content-Disposition', `attachment; filename=${stop.Customer.alias}.pdf`);
+        // res.setHeader('Content-Disposition', `attachment; filename=${stop.Customer.alias}.pdf`);
 
-        PDF.generatePdf({ content: str }, { format: 'A4' }).then((buff) => {
-          const readStream = new stream.PassThrough();
-          readStream.end(buff);
+        pdf.create(str).toStream(function(err, stream) {
+          if (err) {
+            throw err;
+          }
 
-          // response.set('Content-disposition', 'attachment; filename=' + fileName);
-          // response.set('Content-Type', 'text/plain');
-
-          readStream.pipe(res);
+          stream.pipe(res);
         });
-       })
+       });
     } catch (err) {
       return next(err);
     }
