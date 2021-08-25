@@ -4,6 +4,24 @@ import models from '../models';
 import ToursValidator from '../validators/tours';
 
 export default {
+  nextPosition: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+
+      const customer = await models.Customers.findOne({
+        where: {
+          tour_id: id,
+        },
+        raw: true,
+        attributes: ['id', 'tour_position'],
+        order: [['tour_position', 'DESC']],
+      });
+
+      return res.send({ tour_position: customer ? customer.tour_position + 1 : 1 });
+    } catch (err) {
+      return next(err);
+    }
+  },
   list: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { user } = req;

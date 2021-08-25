@@ -120,7 +120,7 @@ export const createCustomer = async (supplier: Supplier, tour: Tour, data = {}):
     email: faker.internet.email().toLowerCase(),
     phone: '123321312312',
     sms_notifications: false,
-    email_notifications: true,
+    email_notifications: false,
     active: true,
     coordinates: {
       type: 'Point',

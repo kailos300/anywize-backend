@@ -4,11 +4,12 @@ import sinon from 'sinon';
 import Helper from './_helper';
 import models from '../models';
 import S3Logic from '../logic/s3';
+import EmailsLogic from '../logic/emails';
 import { DateTime } from 'luxon';
 
 const { request } = Helper;
 
-describe('Drivers tests', () => {
+describe.only('Drivers tests', () => {
   let supplier: Supplier;
 
   before(async () => {
@@ -263,7 +264,16 @@ describe('Drivers tests', () => {
     const {
       route,
       token,
-    } = await Helper.createRoute(user, supplier, [3]);
+      customers,
+    } = await Helper.createRoute(user, supplier, [3, 1]);
+
+    await models.Customers.update({
+      email_notifications: true,
+    }, {
+      where: { id: customers[1].customer.id },
+    });
+
+    const spy = sinon.spy(EmailsLogic, 'notifyRouteStarted');
 
     let res = await request
       .put('/api/drivers/route/start')
@@ -274,7 +284,7 @@ describe('Drivers tests', () => {
     const v1 = await models.Routes.findByPk(route.id);
     expect(v1.start_date).not.to.be.equal(null);
 
-    // second request should matter
+    // second request should not matter
     res = await request
       .put('/api/drivers/route/start')
       .set('Authorization', `Bearer ${token}`);
@@ -282,6 +292,12 @@ describe('Drivers tests', () => {
     expect(res.status).equal(200);
     const v2 = await models.Routes.findByPk(route.id);
     expect(DateTime.fromISO(v2.start_date).toFormat('DDDD')).equal(DateTime.fromISO(v1.start_date).toFormat('DDDD'));
+
+    expect(spy.callCount).equal(1);
+    expect(spy.args[0][0].id).equal(customers[1].customer.id);
+    expect(spy.args[0][1].id).equal(supplier.id);
+
+    spy.restore();
   });
 
   it('PUT /api/drivers/route/end should mark a route as ended', async () => {

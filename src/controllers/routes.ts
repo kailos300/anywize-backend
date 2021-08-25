@@ -1,10 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import createError from 'http-errors';
 import Sequelize from 'sequelize';
-import stream from 'stream';
 import * as ejs from 'ejs';
 import * as pdf from 'html-pdf';
-import * as PDF from 'html-pdf-node';
 import { DateTime } from 'luxon';
 import models from '../models';
 import RoutesLogic from '../logic/routes';
