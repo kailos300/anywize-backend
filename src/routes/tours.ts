@@ -5,6 +5,32 @@ import userHasSupplier from '../middlewares/userHasSupplier';
 const router = Router();
 
 /**
+ * @api {get} /api/tours/:id/next-position Get tour next position
+ * @apiName Get tour next position
+ * @apiGroup Tours
+ * @apiDescription Returns the next position, so when adding a Customer the field
+ * `tour_position` can be filled automatically
+ *
+ * @apiParamExample {json} Request-Example:
+ *    GET /api/tours/1/next-position
+ *
+ * @apiSuccessExample Success-Response:
+ *     {
+ *       "tour_position": 1,
+ *     }
+ *
+ * @apiErrorExample Unauthenticated:
+ *     HTTP/1.1 401
+ *
+ * @apiErrorExample Forbidden:
+ *     HTTP/1.1 403
+ *
+ * @apiErrorExample Not found:
+ *     HTTP/1.1 404
+ */
+router.get('/:id/next-position', userHasSupplier, ToursCtrl.nextPosition);
+
+/**
  * @api {get} /api/tours/:id Get single tour
  * @apiName Get single tour
  * @apiGroup Tours

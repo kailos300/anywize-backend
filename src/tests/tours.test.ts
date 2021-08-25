@@ -26,6 +26,9 @@ describe('Tours tests', () => {
     res = await request.get('/api/tours/1');
     expect(res.status).equal(401);
 
+    res = await request.get('/api/tours/1/next-position');
+    expect(res.status).equal(401);
+
     res = await request.delete('/api/tours/1');
     expect(res.status).equal(401);
   });
@@ -37,6 +40,9 @@ describe('Tours tests', () => {
     expect(res.status).equal(403);
 
     res = await request.put('/api/tours/1').set('Authorization', `Bearer ${token}`);;
+    expect(res.status).equal(403);
+
+    res = await request.get('/api/tours/1/next-position').set('Authorization', `Bearer ${token}`);;
     expect(res.status).equal(403);
 
     res = await request.get('/api/tours').set('Authorization', `Bearer ${token}`);;
@@ -184,5 +190,26 @@ describe('Tours tests', () => {
 
     expect(res.status).equal(400);
     expect(res.body.error).equal('TOUR_CONTAINS_CUSTOMERS');
+  });
+
+  it('GET /api/tours/:id/next-position should return next position in the tour', async () => {
+    let tour = await Helper.createTour(supplier, transportAgent);
+    const { token } = await Helper.createUser({ supplier_id: supplier.id });
+
+    let res = await request
+      .get(`/api/tours/${tour.id}/next-position`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(200);
+    expect(res.body.tour_position).equal(1);
+
+    await Helper.createCustomer(supplier, tour, { tour_position: 10 });
+
+    res = await request
+      .get(`/api/tours/${tour.id}/next-position`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(200);
+    expect(res.body.tour_position).equal(11);
   });
 });

@@ -3,6 +3,7 @@ import Sequelize from 'sequelize';
 import createError from 'http-errors';
 import { DateTime } from 'luxon';
 import S3Logic from '../logic/s3';
+import EmailsLogic from '../logic/emails';
 import RoutesLogic from '../logic/routes';
 import { getDriverJWT } from '../logic/users';
 import models from '../models';
@@ -135,7 +136,7 @@ export default {
 
       const route = await models.Routes.findOne({
         where: { uuid },
-        attributes: ['id', 'start_date', 'end_date'],
+        attributes: ['id', 'tour_id', 'start_date', 'end_date', 'pathway'],
       });
 
       if (route.start_date) {
@@ -143,6 +144,33 @@ export default {
       }
 
       await route.update({ start_date: DateTime.now().toISO() });
+
+      const customers = await models.Customers.findAll({
+        where: {
+          id: route.pathway.map((p) => p.id),
+          email_notifications: true,
+        },
+        attributes: ['id', 'email_notifications', 'email'],
+        raw: true,
+      });
+
+      if (customers.length) {
+        const tour = await models.Tours.findOne({
+          where: {
+            id: route.tour_id,
+          },
+          attributes: ['id'],
+          include: [{
+            model: models.Suppliers,
+            required: true,
+          }],
+        });
+        const supplier = tour.Supplier.toJSON();
+
+        await Promise.all(
+          customers.map((c) => EmailsLogic.notifyRouteStarted(c, supplier)),
+        );
+      }
 
       return res.send({ status: 1 });
     } catch (err) {
