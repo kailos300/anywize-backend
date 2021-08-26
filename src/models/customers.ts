@@ -54,12 +54,15 @@ export default function(sequelize, DataTypes) {
     },
     contact_salutation: {
       type: DataTypes.STRING,
+      allowNull: true,
     },
     contact_name: {
       type: DataTypes.STRING,
+      allowNull: true,
     },
     contact_surname: {
       type: DataTypes.STRING,
+      allowNull: true,
     },
     email: {
       type: DataTypes.STRING,

@@ -9,7 +9,7 @@ import { DateTime } from 'luxon';
 
 const { request } = Helper;
 
-describe.only('Drivers tests', () => {
+describe('Drivers tests', () => {
   let supplier: Supplier;
 
   before(async () => {
