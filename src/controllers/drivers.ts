@@ -167,9 +167,7 @@ export default {
         });
         const supplier = tour.Supplier.toJSON();
 
-        await Promise.all(
-          customers.map((c) => EmailsLogic.notifyRouteStarted(c, supplier)),
-        );
+        customers.map((c) => EmailsLogic.notifyRouteStarted(c, supplier));
       }
 
       return res.send({ status: 1 });
