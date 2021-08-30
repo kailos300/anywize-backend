@@ -2,6 +2,7 @@ import * as express from 'express';
 import isAuthenticated from '../middlewares/isAuthenticated';
 import isAdmin from '../middlewares/isAdmin';
 import models from '../models';
+import RoutesEvents from '../logic/routes-events';
 const _package = require('../../package.json');
 
 const router = express.Router();
@@ -15,6 +16,16 @@ import transportAgents from './transport-agents';
 import orders from './orders';
 import routes from './routes';
 import drivers from './drivers';
+
+router.get('/event/:id', async (req, res, next) => {
+  const { id } = req.params;
+
+  const emitter = RoutesEvents();
+
+  emitter.emit('route-updated', { id });
+
+  return res.send('ok');
+});
 
 router.get('/ping', async (req, res, next) => {
   try {
