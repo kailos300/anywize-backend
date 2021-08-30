@@ -8,6 +8,9 @@ import RoutesLogic from '../logic/routes';
 import { getDriverJWT } from '../logic/users';
 import models from '../models';
 import DriversValidators from '../validators/drivers';
+import RoutesEvents from '../logic/routes-events';
+
+const emitter = RoutesEvents();
 
 export default {
   authenticate: async (req: Request, res: Response, next: NextFunction) => {
@@ -96,6 +99,8 @@ export default {
 
       const route = await RoutesLogic.getRouteForDriver({ uuid });
 
+      emitter.emit('route-updated', { id });
+
       return res.send(route);
     } catch (err) {
       return next(err);
@@ -110,8 +115,6 @@ export default {
 
       const { customer_id, navigation } = body;
 
-
-
       await models.RoutesNavigations.create({
         customer_id,
         navigation: {
@@ -124,6 +127,8 @@ export default {
         },
         route_id: id,
       });
+
+      emitter.emit('route-updated', { id });
 
       return res.send({ status: 1 });
     } catch (err) {
@@ -170,6 +175,8 @@ export default {
         customers.map((c) => EmailsLogic.notifyRouteStarted(c, supplier));
       }
 
+      emitter.emit('route-updated', { id });
+
       return res.send({ status: 1 });
     } catch (err) {
       return next(err);
@@ -199,6 +206,8 @@ export default {
 
       await route.update({ end_date: DateTime.now().toISO() });
 
+      emitter.emit('route-updated', { id });
+
       return res.send({ status: 1 });
     } catch (err) {
       return next(err);
@@ -224,6 +233,8 @@ export default {
           coordinates: [body.longitude, body.latitude],
         },
       });
+
+      emitter.emit('route-updated', { id: route.id });
 
       return res.send({ status: 1 });
     } catch (err) {
