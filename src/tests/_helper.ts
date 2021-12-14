@@ -19,7 +19,7 @@ export const delay = (ms) => new Promise((resolve): void => {
   setTimeout(() => resolve(true), ms);
 });
 
-export const createSupplier = async (forceNew = false): Promise<Supplier> => {
+export const createSupplier = async (forceNew = false, data = {}): Promise<Supplier> => {
   if (!forceNew && supplier) {
     return supplier;
   }
@@ -34,7 +34,9 @@ export const createSupplier = async (forceNew = false): Promise<Supplier> => {
     country: 'AR',
     email: faker.internet.email().toLowerCase(),
     phone: '123123123',
+    number: '0000',
     active: true,
+    ...data,
   });
 
   if (forceNew) {
@@ -96,6 +98,7 @@ export const createTour = async (supplier: Supplier, transportAgent: TransportAg
     transport_agent_id: transportAgent.id,
     name: `Tour: ${faker.company.companyName()}`,
     description: 'this is the tour 1',
+    number: '0000',
     active: true,
   });
 
@@ -137,7 +140,7 @@ export const createOrder = async (supplier: Supplier, customer: Customer, data =
     customer_id: customer.id,
     supplier_id: supplier.id,
     description: 'This is the order description for ' + customer.name,
-    number: 'number',
+    number: '0000',
     ...data,
   });
 
@@ -157,8 +160,8 @@ export const createRoute = async (
   const tour = await createTour(supplier, transportAgent);
   const order_ids = [];
   const customers = await Promise.all(
-    _customers.map(async (numberOfOrders) => {
-      const customer = await createCustomer(supplier, tour);
+    _customers.map(async (numberOfOrders, ii) => {
+      const customer = await createCustomer(supplier, tour, { tour_position: ii });
       let i = 0;
       let orders = [];
 

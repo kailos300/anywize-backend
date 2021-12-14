@@ -1,5 +1,8 @@
 export default function(sequelize, DataTypes) {
   const Suppliers = sequelize.define('Suppliers', {
+    number: {
+      type: DataTypes.STRING,
+    },
     name: {
       type: DataTypes.STRING,
     },

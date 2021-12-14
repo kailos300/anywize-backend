@@ -45,6 +45,7 @@ declare type Tour = {
   id: number;
   supplier_id: number;
   transport_agent_id: number;
+  number: string;
   name: string;
   description: string;
   active: boolean;
@@ -151,4 +152,40 @@ declare type RouteForDriver = Omit<Route, 'pathway'> & {
   };
   pathway: CustomerWithOrders[];
   current_pathway_index: number;
+};
+
+declare type ImportKontakte = {
+  ID_Kontakte: string; // Customer Number
+  Firma: string; // Customer Name & Alias
+  PLZ: string; // Customer Zipcode
+  Ort: string; // Customer City
+  Strasse: string; // Customer Street & House Number
+  Hausnummer: string; // this is unfortanetly empty for most or all of the data. We have to filter that out
+  Prioritaet: string; // out of the priority for each tour we need to create the order of the stops for the tour
+  erstelltAm: string; // created on
+  geaendertAm: string; // changed on
+};
+
+declare type ImportLieferungen = {
+  'tbl_Lieferung.ID_Lieferung': string; // Order Number (not needed by us I think)
+  Lieferscheinnummer: string; // Delivery document Number (not needed by us)
+  Packstuecke: string; // not needed by us
+  FRD_ID_Versender: string; // Sender ID -> need to filter out the order with the wanted ID
+  FRD_ID_Kontakte: string; // Customer Number that is the stop
+  erstelltAm: string; // created on
+};
+
+declare type ImportBody = {
+  Lieferanten_ID: string;
+  ID_Tour: string;
+  Tour_Name: string;
+  LieferDatum: string;
+  Abfahrt: string; // differentiator for the excution. Each tour can be executed 3 times (morning, midday, evening) This should be used in onecycle to determine X.1, X.2, X.3 for the tour number
+  erstelltAm: string;
+  Kontakte: ImportKontakte[];
+  Versender: {
+    ID_Versender: string;
+    Name_Versender: string;
+  }[];
+  Lieferungen: ImportLieferungen[];
 };

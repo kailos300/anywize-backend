@@ -442,6 +442,7 @@ describe('Drivers tests', () => {
       .get('/api/drivers/route')
       .set('Authorization', `Bearer ${token}`);
     expect(res.status).equal(200);
+
     expect(res.body.pathway[0].id).equal(customers[0].customer.id);
 
     let spy = sinon.stub(S3Logic, 'processStopFiles').callsFake(() => ['signature.png', []]);
