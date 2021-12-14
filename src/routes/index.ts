@@ -16,6 +16,7 @@ import transportAgents from './transport-agents';
 import orders from './orders';
 import routes from './routes';
 import drivers from './drivers';
+import importing from './import';
 
 router.get('/event/:id', async (req, res, next) => {
   const { id } = req.params;
@@ -46,5 +47,6 @@ router.use('/api/transport-agents', isAuthenticated, transportAgents);
 router.use('/api/orders', isAuthenticated, orders);
 router.use('/api/routes', isAuthenticated, routes);
 router.use('/api/drivers', drivers);
+router.use('/api/import', importing);
 
 export default router;

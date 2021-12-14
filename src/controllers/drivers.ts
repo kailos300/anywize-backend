@@ -175,7 +175,7 @@ export default {
         customers.map((c) => EmailsLogic.notifyRouteStarted(c, supplier));
       }
 
-      emitter.emit('route-updated', { id });
+      emitter.emit('route-updated', { id: route.id });
 
       return res.send({ status: 1 });
     } catch (err) {
@@ -206,7 +206,7 @@ export default {
 
       await route.update({ end_date: DateTime.now().toISO() });
 
-      emitter.emit('route-updated', { id });
+      emitter.emit('route-updated', { id: route.id });
 
       return res.send({ status: 1 });
     } catch (err) {

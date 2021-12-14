@@ -190,7 +190,7 @@ describe('Orders tests', () => {
       .get('/api/orders')
       .set('Authorization', `Bearer ${token}`);
 
-    expect(res.status).equal(200);console.log(JSON.stringify(res.body));
+    expect(res.status).equal(200);
     expect(res.body[0].id).equal(order.id);
 
     res = await request

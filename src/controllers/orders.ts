@@ -58,7 +58,6 @@ export default {
           model: models.Tours,
           attributes: ['id', 'name'],
         }],
-        logging: console.log,
       });
 
       return res.send(customers);

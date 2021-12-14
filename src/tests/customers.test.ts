@@ -1,7 +1,7 @@
 import 'mocha';
 import { expect } from 'chai';
 import Helper from './_helper';
-import { hasUncaughtExceptionCaptureCallback } from 'process';
+import models from '../models';
 
 const { request } = Helper;
 
@@ -305,5 +305,55 @@ describe('Customers tests', () => {
       .get(`/api/customers/${customer.id}`)
       .set('Authorization', `Bearer ${token}`);
     expect(res.status).equal(404);
+  });
+
+  it('POST /api/customers should resolve the tour_position correctly', async () => {
+    const { token } = await Helper.createUser({ supplier_id: supplier.id });
+    const newTour = await Helper.createTour(supplier, transportAgent);
+
+    let customerOne = await Helper.createCustomer(supplier, newTour, { tour_position: 1 });
+    expect(customerOne.tour_position).equal(1);
+
+    let customerTwo = await Helper.createCustomer(supplier, newTour, { tour_position: 2 });
+    expect(customerTwo.tour_position).equal(2);
+
+    let customerThree = await Helper.createCustomer(supplier, newTour, { tour_position: 3 });
+    expect(customerThree.tour_position).equal(3);
+
+    let res = await request
+      .post('/api/customers')
+      .send({
+        tour_id: newTour.id,
+        tour_position: 2,
+        name: 'Customer one',
+        alias: 'Customer one',
+        street: 'st',
+        street_number: '123123',
+        city: 'city',
+        zipcode: 'zip',
+        country: 'AR',
+        contact_salutation: 'DR',
+        contact_name: 'Pepe',
+        contact_surname: 'Argento',
+        email: 'bla@bla.com',
+        phone: '123123123',
+        latitude: 10.00001,
+        longitude: 11.00001,
+        deposit_agreement: 'BRING_KEY',
+        keybox_code: null,
+      })
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(200);
+    expect(res.body.tour_position).equal(2);
+
+    customerOne = await models.Customers.findByPk(customerOne.id, { raw: true });
+    expect(customerOne.tour_position).equal(1);
+
+    customerTwo = await models.Customers.findByPk(customerTwo.id, { raw: true });
+    expect(customerTwo.tour_position).equal(3);
+
+    customerThree = await models.Customers.findByPk(customerThree.id, { raw: true });
+    expect(customerThree.tour_position).equal(4);
   });
 });

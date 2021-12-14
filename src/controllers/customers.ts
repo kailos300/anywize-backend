@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import createError from 'http-errors';
 import models from '../models';
 import CustomersValidators from '../validators/customers';
+import CustomersLogic from '../logic/customers';
 
 export default {
   list: async (req: Request, res: Response, next: NextFunction) => {
@@ -95,6 +96,8 @@ export default {
         },
       });
 
+      await CustomersLogic.fixPositioning(customer.toJSON());
+
       return res.send(customer);
     } catch (err) {
       return next(err);
@@ -138,6 +141,8 @@ export default {
           coordinates: [body.longitude, body.latitude],
         },
       });
+
+      await CustomersLogic.fixPositioning(updated.toJSON());
 
       return res.send(updated);
     } catch (err) {
