@@ -9,6 +9,10 @@ export default {
     try {
       const { body }: { body: ImportBody } = req;
 
+      if (!body.Lieferungen || !body.Lieferungen.length) {
+        return res.send({ status: 1, uuid: 'OMITTED_NO_ORDERS' });
+      }
+
       const supplier = await models.Suppliers.findOne({
         where: {
           number: body.Lieferanten_ID,
