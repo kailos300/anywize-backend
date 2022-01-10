@@ -1,4 +1,5 @@
 import createError from 'http-errors';
+import Sequelize from 'sequelize';
 import orderBy from 'lodash/orderBy';
 import randomString from 'randomstring';
 import { DateTime } from 'luxon';
@@ -208,7 +209,13 @@ export default {
 
     const ordered: CustomerWithOrders[] = orderBy(customers, ['tour_position'], ['asc']).map((o) => o.toJSON());
     const count = await models.Routes.count({
-      where: { tour_id: body.tour_id },
+      where: {
+        tour_id: body.tour_id,
+        created_at: {
+          [Sequelize.Op.gte]: DateTime.utc().startOf('day').toISO(),
+          [Sequelize.Op.lte]: DateTime.utc().endOf('day').toISO(),
+        },
+      },
     });
 
     const route = await models.Routes.create({
