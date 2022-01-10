@@ -96,7 +96,7 @@ export default {
           return models.Orders.create({
             supplier_id: supplier.id,
             customer_id: customer.id,
-            description: 'Order imported',
+            description: 'Importierter Auftrag',
             number: o['tbl_Lieferung.ID_Lieferung'],
           }).then((o) => o.toJSON());
         })

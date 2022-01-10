@@ -40,6 +40,10 @@ export default function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: true,
     },
+    created_at: {
+      type: DataTypes.DATE,
+      defaultValue: () => new Date(),
+    }
   }, {
     timestamps: false,
     tableName: 'routes',
