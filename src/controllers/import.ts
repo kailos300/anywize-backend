@@ -29,6 +29,7 @@ export default {
       const [tour] = await models.Tours.findOrCreate({
         where: {
           number: body.ID_Tour,
+          supplier_id: supplier.id,
         },
         defaults: {
           supplier_id: supplier.id,
