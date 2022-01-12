@@ -15,7 +15,7 @@ export default {
 
       const supplier = await models.Suppliers.findOne({
         where: {
-          number: body.Lieferanten_ID,
+          number: body.Lieferanten_ID.trim(),
         },
         raw: true,
       });
@@ -28,7 +28,7 @@ export default {
 
       const [tour] = await models.Tours.findOrCreate({
         where: {
-          number: body.ID_Tour,
+          number: body.ID_Tour.trim(),
           supplier_id: supplier.id,
         },
         defaults: {
@@ -44,7 +44,7 @@ export default {
         body.Kontakte.map((c) => {
           return models.Customers.findOrCreate({
             where: {
-              number: c.ID_Kontakte,
+              number: c.ID_Kontakte.trim(),
             },
             defaults: {
               supplier_id: supplier.id,
@@ -103,14 +103,24 @@ export default {
         })
       );
 
-      const route = await RoutesLogic.create({
-        order_ids: orders.map((o) => o.id),
-        tour_id: tour.id,
-      }, {
-        supplier_id: supplier.id
-      } as User);
+      try {
+        const route = await RoutesLogic.create({
+          order_ids: orders.map((o) => o.id),
+          tour_id: tour.id,
+        }, {
+          supplier_id: supplier.id
+        } as User);
 
-      return res.send(route);
+        return res.send(route);
+      } catch (err) {
+        await models.Orders.destroy({
+          where: {
+            id: orders.map((o) => o.id),
+          },
+        });
+
+        throw err;
+      }
     } catch (err) {
       return next(err);
     }
