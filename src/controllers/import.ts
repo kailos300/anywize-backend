@@ -45,6 +45,7 @@ export default {
           return models.Customers.findOrCreate({
             where: {
               number: c.ID_Kontakte.trim(),
+              tour_id: tour.id,
             },
             defaults: {
               supplier_id: supplier.id,
