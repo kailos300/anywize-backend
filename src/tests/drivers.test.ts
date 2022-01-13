@@ -458,7 +458,7 @@ describe('Drivers tests', () => {
       .field('meet_customer', true)
       .field('driver_name', 'John')
       .field('driver_phone', '12312312312312')
-      .field('goods_back', false)
+      .field('goods_back', '0')
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.status).equal(200);

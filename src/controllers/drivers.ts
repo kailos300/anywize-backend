@@ -84,7 +84,7 @@ export default {
 
       const [signature, pictures] = await S3Logic.processStopFiles(<any>files);
 
-      const stop = await models.Stops.create({
+      const created = await models.Stops.create({
         ...body,
         route_id: id,
         location: {
@@ -94,6 +94,7 @@ export default {
         signature_file: signature,
         pictures,
       });
+      const stop = await models.Stops.findByPk(created.id);
 
       await RoutesLogic.markOrdersAsDelivered(uuid, parseInt(body.customer_id, 10), stop);
 
