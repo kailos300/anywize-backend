@@ -6,10 +6,20 @@ const LoginSchema = Joi.object().keys({
   password: Joi.string().required(),
 });
 
-const LocationSchema = Joi.object().keys({
-  latitude: Joi.number().precision(8).required(),
-  longitude: Joi.number().precision(8).required(),
-});
+const LocationSchema = Joi.alternatives().try(
+  Joi.array().items(
+    Joi.object().keys({
+      latitude: Joi.number().precision(8).required(),
+      longitude: Joi.number().precision(8).required(),
+      created_at: Joi.date().optional(),
+    }),
+  ),
+  Joi.object().keys({
+    latitude: Joi.number().precision(8).required(),
+    longitude: Joi.number().precision(8).required(),
+    created_at: Joi.date().optional(),
+  }),
+);
 
 const CreateStopSchema = Joi.object().keys({
   customer_id: Joi.number().integer().required(),

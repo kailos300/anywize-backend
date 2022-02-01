@@ -351,6 +351,12 @@ router.post('/route/stop', isDriverAuthenticated, fileUploadMiddleware, DriversC
  *        longitude: 9.123123,
  *     }
  *
+ *     [{
+ *        latitude: 10.002132,
+ *        longitude: 9.123123,
+ *        created_at?: '2021-01-01 10:00:00'
+ *     }]
+ *
  * @apiSuccessExample Success-Response:
  *     {
  *       "status": 1
