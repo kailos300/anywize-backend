@@ -347,10 +347,6 @@ describe('Drivers tests', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.status).equal(400);
-    expect(res.body.errors).eql({
-      longitude: '"longitude" is required',
-      latitude: '"latitude" is required',
-    });
 
     res = await request
       .post('/api/drivers/route/location')
@@ -363,10 +359,11 @@ describe('Drivers tests', () => {
 
     res = await request
       .post('/api/drivers/route/location')
-      .send({
+      .send([{
         longitude: 10.123123,
         latitude: 9.2,
-      })
+        created_at: '2021-01-01T10:00:00',
+      }])
       .set('Authorization', `Bearer ${token}`);
     expect(res.status).equal(200);
 

@@ -227,13 +227,27 @@ export default {
         raw: true,
       });
 
-      await models.DriversLocations.create({
-        route_id: route.id,
-        location: {
-          type: 'Point',
-          coordinates: [body.longitude, body.latitude],
-        },
-      });
+      if (!Array.isArray(body)) {
+        await models.DriversLocations.create({
+          route_id: route.id,
+          location: {
+            type: 'Point',
+            coordinates: [body.longitude, body.latitude],
+          },
+          created_at: body.created_at || DateTime.now().toISO(),
+        });
+      } else {
+        await models.DriversLocations.bulkCreate(
+          body.map((b) => ({
+            route_id: route.id,
+            location: {
+              type: 'Point',
+              coordinates: [b.longitude, b.latitude],
+            },
+            created_at: b.created_at || DateTime.now().toISO(),
+          }))
+        );
+      }
 
       emitter.emit('route-updated', { id: route.id });
 
