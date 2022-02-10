@@ -7,9 +7,9 @@ import models from '../models';
 import S3Logic from './s3';
 
 export default {
-  markOrdersAsDelivered: async (uuid: string, customer_id: number, stop: Stop): Promise<any> => {
+  markOrdersAsDelivered: async (id: string | number, customer_id: number, stop: Stop): Promise<any> => {
     const route = await models.Routes.findOne({
-      where: { uuid },
+      where: { id },
       attributes: ['id', 'start_date', 'end_date', 'pathway'],
     });
 
