@@ -46,10 +46,10 @@ export default {
   },
   route: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { uuid } = req.route;
+      const { id } = req.route;
 
       const route = await RoutesLogic.getRouteForDriver({
-        uuid,
+        id,
       });
 
       return res.send(route);
@@ -59,13 +59,13 @@ export default {
   },
   setDriverName: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { uuid } = req.route;
+      const { id } = req.route;
       const { body } = req;
 
       await DriversValidators.setName(body);
 
       const route = await models.Routes.findOne({
-        where: { uuid },
+        where: { id },
       });
 
       await route.update(body);
@@ -77,7 +77,7 @@ export default {
   },
   createStop: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { uuid, id } = req.route;
+      const { id } = req.route;
       const { body, files } = req;
 
       await DriversValidators.createStop(body);
@@ -96,9 +96,9 @@ export default {
       });
       const stop = await models.Stops.findByPk(created.id);
 
-      await RoutesLogic.markOrdersAsDelivered(uuid, parseInt(body.customer_id, 10), stop);
+      await RoutesLogic.markOrdersAsDelivered(id, parseInt(body.customer_id, 10), stop);
 
-      const route = await RoutesLogic.getRouteForDriver({ uuid });
+      const route = await RoutesLogic.getRouteForDriver({ id });
 
       emitter.emit('route-updated', { id });
 
@@ -138,10 +138,10 @@ export default {
   },
   startRoute: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { uuid } = req.route;
+      const { id } = req.route;
 
       const route = await models.Routes.findOne({
-        where: { uuid },
+        where: { id },
         attributes: ['id', 'tour_id', 'start_date', 'end_date', 'pathway'],
       });
 
@@ -185,11 +185,11 @@ export default {
   },
   endRoute: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { uuid } = req.route;
+      const { id } = req.route;
 
       const route = await models.Routes.findOne({
         where: {
-          uuid,
+          id,
           start_date: {
             [Sequelize.Op.not]: null,
           },
@@ -216,20 +216,14 @@ export default {
   },
   location: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { uuid } = req.route;
+      const { id } = req.route;
       const { body } = req;
 
       await DriversValidators.location(body);
 
-      const route = await models.Routes.findOne({
-        where: { uuid },
-        attributes: ['id'],
-        raw: true,
-      });
-
       if (!Array.isArray(body)) {
         await models.DriversLocations.create({
-          route_id: route.id,
+          route_id: id,
           location: {
             type: 'Point',
             coordinates: [body.longitude, body.latitude],
@@ -239,7 +233,7 @@ export default {
       } else {
         await models.DriversLocations.bulkCreate(
           body.map((b) => ({
-            route_id: route.id,
+            route_id: id,
             location: {
               type: 'Point',
               coordinates: [b.longitude, b.latitude],
@@ -249,7 +243,7 @@ export default {
         );
       }
 
-      emitter.emit('route-updated', { id: route.id });
+      emitter.emit('route-updated', { id: id });
 
       return res.send({ status: 1 });
     } catch (err) {
