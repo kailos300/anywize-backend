@@ -1,10 +1,12 @@
 import createError from 'http-errors';
 import Sequelize from 'sequelize';
 import orderBy from 'lodash/orderBy';
+import sortBy from 'lodash/sortBy';
 import randomString from 'randomstring';
 import { DateTime } from 'luxon';
 import models from '../models';
 import S3Logic from './s3';
+import RoutesCustomersOrdering from './routes-customers-ordering';
 
 export default {
   markOrdersAsDelivered: async (id: string | number, customer_id: number, stop: Stop): Promise<any> => {
@@ -169,6 +171,10 @@ export default {
     });
   },
   create: async (body: { order_ids: number[], tour_id: number }, user: User): Promise<Route> => {
+    const supplier = await models.Suppliers.findOne({
+      where: { id: user.supplier_id },
+      raw: true,
+    });
     const customers = await models.Customers.findAll({
       where: {
         tour_id: body.tour_id,
@@ -207,7 +213,23 @@ export default {
       throw createError(400, 'INVALID_TOUR');
     }
 
-    const ordered: CustomerWithOrders[] = orderBy(customers, ['tour_position'], ['asc']).map((o) => o.toJSON());
+    const salesmanOrderedCustomers = await RoutesCustomersOrdering.solveWithMatrix({
+      id: 0,
+      name: 'Start',
+      latitude: supplier.coordinates.coordinates[1],
+      longitude: supplier.coordinates.coordinates[0],
+    }, customers.map((c) => ({
+      id: c.id,
+      name: c.name,
+      latitude: c.coordinates.coordinates[1],
+      longitude: c.coordinates.coordinates[0],
+    })));
+    const orderedCustomersIds = salesmanOrderedCustomers.map((c) => c.id);
+
+    const ordered: CustomerWithOrders[] = customers.sort((a, b) => {
+      return orderedCustomersIds.indexOf(a.id) - orderedCustomersIds.indexOf(b.id);
+    });
+
     const count = await models.Routes.count({
       where: {
         tour_id: body.tour_id,
