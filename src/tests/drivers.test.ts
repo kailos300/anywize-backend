@@ -5,6 +5,7 @@ import Helper from './_helper';
 import models from '../models';
 import S3Logic from '../logic/s3';
 import EmailsLogic from '../logic/emails';
+import RoutesCustomersOrdering from '../logic/routes-customers-ordering';
 import { DateTime } from 'luxon';
 
 const { request } = Helper;
@@ -423,6 +424,7 @@ describe('Drivers tests', () => {
 
   it('POST /api/drivers/route/stop should create a stop, mark the route section as started and return the next pathway', async () => {
     const { user } = await Helper.createUser({ supplier_id: supplier.id });
+    const orderSpy = sinon.stub(RoutesCustomersOrdering, 'solveWithMatrix').callsFake(() => []);
     const {
       route,
       token,
@@ -560,5 +562,6 @@ describe('Drivers tests', () => {
     dbRoute.pathway[2].Orders.forEach((o) => expect(o.delivered_at).not.to.be.equal(null));
 
     spy.restore();
+    orderSpy.restore();
   });
 });

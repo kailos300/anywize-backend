@@ -1,8 +1,10 @@
 import 'mocha';
 import { expect } from 'chai';
+import sinon from 'sinon';
 import { DateTime } from 'luxon';
 import Helper from './_helper';
 import models from '../models';
+import RoutesCustomersOrdering from '../logic/routes-customers-ordering';
 
 const { request } = Helper;
 
@@ -56,6 +58,8 @@ describe('Routes tests', () => {
     const orderThree = await Helper.createOrder(supplier, customerTwo);
     const customerThree = await Helper.createCustomer(supplier, tour, { tour_position: 1 });
     const orderFour = await Helper.createOrder(supplier, customerThree);
+
+    let spy = sinon.stub(RoutesCustomersOrdering, 'solveWithMatrix').callsFake(() => [{ id: customer.id }]);
 
     let res = await request
       .post('/api/routes')
@@ -129,7 +133,11 @@ describe('Routes tests', () => {
       ],
     }]);
 
+    expect(spy.callCount).equal(1);
+    spy.restore();
+
     // two customers with 3 orders total
+    spy = sinon.stub(RoutesCustomersOrdering, 'solveWithMatrix').callsFake(() => [{ id: customerThree.id }, { id: customerTwo.id }]);
     res = await request
       .post('/api/routes')
       .send({
