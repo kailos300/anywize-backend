@@ -96,4 +96,6 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
     .json({ error: err.message, stack: err.stack });
 });
 
+require('./cron');
+
 export default app;
