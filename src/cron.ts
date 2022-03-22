@@ -3,7 +3,7 @@ const { DateTime } = require('luxon');
 const Sequelize = require('sequelize');
 const models = require('./models').default;
 
-const EVERY_SATURDAY = '0 0 0 * * 6';
+const EVERY_SATURDAY = '0 0 0 * * *';
 const EVERY_30_SECONDS = '0 */2 * * * *';
 
 const job = new CronJob(EVERY_SATURDAY, async function() {
@@ -11,7 +11,7 @@ const job = new CronJob(EVERY_SATURDAY, async function() {
 
   const routes = await models.Routes.findAll({
     where: {
-      start_date: {
+      created_at: {
         [Sequelize.Op.not]: null,
         [Sequelize.Op.lte]: DateTime.now().minus({ days: 5 }).toISO(),
       },
