@@ -32,7 +32,6 @@ const matrix = async (customers) => {
       }
     );
 
-    console.log(data);
     Debug(data?.distances);
 
     return data;

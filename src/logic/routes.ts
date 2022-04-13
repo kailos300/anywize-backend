@@ -9,6 +9,28 @@ import S3Logic from './s3';
 import RoutesCustomersOrdering from './routes-customers-ordering';
 
 export default {
+  archive: async () => {
+    const routes = await models.Routes.findAll({
+      where: {
+        created_at: {
+          [Sequelize.Op.not]: null,
+          [Sequelize.Op.lte]: DateTime.now().minus({ days: 5 }).toISO(),
+        },
+        end_date: null,
+      },
+    });
+
+    console.log('Found routes: ', routes.length);
+    console.log(routes.map((r) => r.id).join(', '));
+
+    for (let route of routes) {
+      await route.update({
+        end_date: route.start_date,
+      }, {
+        logging: console.log,
+      });
+    }
+  },
   markOrdersAsDelivered: async (id: string | number, customer_id: number, stop: Stop): Promise<any> => {
     const route = await models.Routes.findOne({
       where: { id },
