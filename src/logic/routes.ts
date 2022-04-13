@@ -26,8 +26,8 @@ export default {
     await Promise.all(
       routes.map((route) => {
         return route.update({
-          start_date: route.start_date | route.created_at,
-          end_date: route.start_date | route.created_at,
+          start_date: route.start_date || route.created_at,
+          end_date: route.start_date || route.created_at,
         }, {
           logging: console.log,
         });
