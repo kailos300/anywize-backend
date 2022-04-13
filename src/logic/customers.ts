@@ -5,8 +5,6 @@ import models from '../models';
 export default {
   geocode: async (address: string) => {
     try {
-      console.log('Getting for address:', address);
-
       const { data } = await axios
         .get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${address}.json?access_token=pk.eyJ1IjoiaW5mZW5zIiwiYSI6ImNrcHJpd2t1czA4dHAyb21ucmEyN2hlNzAifQ.UqPpun5dr8HdvlPPrRvx6A`);
 
@@ -18,8 +16,6 @@ export default {
         return null;
       }
 
-      console.log(data.features[0]);
-
       return {
         coordinates: {
           type: 'Point',
@@ -27,7 +23,6 @@ export default {
         },
       }
     } catch (err) {
-      console.log(err);
       return null;
     }
   },

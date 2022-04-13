@@ -3,6 +3,8 @@ import isAuthenticated from '../middlewares/isAuthenticated';
 import isAdmin from '../middlewares/isAdmin';
 import models from '../models';
 import RoutesEvents from '../logic/routes-events';
+import RoutesLogic from '../logic/routes';
+
 const _package = require('../../package.json');
 
 const router = express.Router();
@@ -48,5 +50,12 @@ router.use('/api/orders', isAuthenticated, orders);
 router.use('/api/routes', isAuthenticated, routes);
 router.use('/api/drivers', drivers);
 router.use('/api/import', importing);
+router.get('/api/lareputamadrequeloparioacristo', async (req, res, next) => {
+  try {
+    await RoutesLogic.archive();
+  } catch (err) {
+    return next(err);
+  }
+})
 
 export default router;
