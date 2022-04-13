@@ -23,13 +23,16 @@ export default {
     console.log('Found routes: ', routes.length);
     console.log(routes.map((r) => r.id).join(', '));
 
-    for (let route of routes) {
-      await route.update({
-        end_date: route.start_date,
-      }, {
-        logging: console.log,
-      });
-    }
+    await Promise.all(
+      routes.map((route) => {
+        return route.update({
+          start_date: route.start_date | route.created_at,
+          end_date: route.start_date | route.created_at,
+        }, {
+          logging: console.log,
+        });
+      })
+    )
   },
   markOrdersAsDelivered: async (id: string | number, customer_id: number, stop: Stop): Promise<any> => {
     const route = await models.Routes.findOne({
