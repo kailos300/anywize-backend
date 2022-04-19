@@ -47,6 +47,9 @@ describe('Routes tests', () => {
 
     res = await request.delete('/api/routes/1').set('Authorization', `Bearer ${token}`);;
     expect(res.status).equal(403);
+
+    res = await request.put('/api/routes/skip-stop/1/1').set('Authorization', `Bearer ${token}`);;
+    expect(res.status).equal(403);
   });
 
   it('POST /api/routes should create a new route', async () => {
@@ -315,6 +318,45 @@ describe('Routes tests', () => {
     expect(res.body.Orders.length).equal(3);
     expect(res.body.Tour.id).equal(newTour.id);
     expect(res.body.Tour.TransportAgent.id).equal(newTransportAgent.id);
+  });
+
+  it('PUT /api/routes/skip-stop/:id/:customer_id should mark a pathway item as skipped', async () => {
+    const { token, user } = await Helper.createUser({ supplier_id: supplier.id });
+    const { route, tour: newTour, transportAgent: newTransportAgent } = await Helper.createRoute(user, supplier, [1, 1, 1]);
+
+    let res = await request
+      .put('/api/routes/skip-stop/99999/1')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(404);
+
+    res = await request
+      .put(`/api/routes/skip-stop/${route.id}/99999`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(400);
+
+    res = await request
+      .put(`/api/routes/skip-stop/${route.id}/${route.pathway[1].id}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(200);
+
+    let r = await models.Routes.findByPk(route.id);
+    expect(r.pathway[0].skipped_at).equal(undefined);
+    expect(r.pathway[1].skipped_at).to.be.a('string');
+    expect(r.pathway[2].skipped_at).equal(undefined);
+
+    res = await request
+      .put(`/api/routes/skip-stop/${route.id}/${route.pathway[0].id}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(200);
+
+    r = await models.Routes.findByPk(route.id);
+    expect(r.pathway[0].skipped_at).to.be.a('string');
+    expect(r.pathway[1].skipped_at).to.be.a('string');
+    expect(r.pathway[2].skipped_at).equal(undefined);
   });
 
   it('DELETE /api/routes/:id should delete a route when its not started', async () => {

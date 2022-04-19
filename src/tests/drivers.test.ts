@@ -168,7 +168,7 @@ describe('Drivers tests', () => {
       transportAgent: newTransportAgent,
     } = await Helper.createRoute(user, supplier, [3]);
 
-    const res = await request
+    let res = await request
       .get('/api/drivers/route')
       .set('Authorization', `Bearer ${token}`);
 
@@ -226,6 +226,23 @@ describe('Drivers tests', () => {
     expect(res.body.Tour.id).equal(newTour.id);
     expect(res.body.Tour.TransportAgent.id).equal(newTransportAgent.id);
     expect(res.body.Tour.Supplier.id).equal(supplier.id);
+
+    const { pathway } = await models.Routes.findByPk(route.id, { raw: true });
+
+    pathway[0].skipped_at = DateTime.now().toISO();
+
+    await models.Routes.update({
+      pathway,
+    }, {
+      where: { id: route.id },
+    });
+
+    res = await request
+      .get('/api/drivers/route')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).equal(200);
+    expect(res.body.pathway).eql(null);
   });
 
   it('PUT /api/drivers/route should set the driver name and phone to the route', async () => {
@@ -461,6 +478,7 @@ describe('Drivers tests', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.status).equal(200);
+    expect(res.body.pathway.length).equal(3);
     expect(res.body.pathway[0].goods_back).equal(false);
     expect(res.body.current_pathway_index).equal(1);
     expect(res.body.pathway[res.body.current_pathway_index].id).equal(customers[1].customer.id);
@@ -504,6 +522,7 @@ describe('Drivers tests', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.status).equal(200);
+    expect(res.body.pathway.length).equal(3);
     expect(res.body.current_pathway_index).equal(2);
     expect(res.body.pathway[res.body.current_pathway_index].id).equal(customers[2].customer.id);
     expect(res.body.pathway[res.body.current_pathway_index].Orders.length).equal(1);

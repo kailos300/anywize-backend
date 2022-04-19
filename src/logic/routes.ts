@@ -108,7 +108,7 @@ export default {
     const { pathway, Stops, ...rest } = route;
     const visitedCustomersIds = Stops.map((s) => s.customer_id);
     const [filteredPathway] = route.pathway.filter((path) => {
-      return !visitedCustomersIds.includes(path.id);
+      return !visitedCustomersIds.includes(path.id) && !path.skipped_at;
     });
 
     const current_pathway_index = filteredPathway
@@ -117,7 +117,7 @@ export default {
 
     return {
       ...rest,
-      pathway: filteredPathway ? pathway : null,
+      pathway: filteredPathway ? pathway.filter((p) => !p.skipped_at) : null,
       current_pathway_index,
     };
   },
