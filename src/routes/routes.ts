@@ -358,4 +358,6 @@ router.post('/', userHasSupplier, RoutesCtrl.create);
  */
 router.delete('/:id', userHasSupplier, RoutesCtrl.destroy);
 
+router.put('/skip-stop/:id/:customer_id', userHasSupplier, RoutesCtrl.skipStop);
+
 export default router;

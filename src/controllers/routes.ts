@@ -9,6 +9,9 @@ import RoutesLogic from '../logic/routes';
 import S3Logic from '../logic/s3';
 import RoutesValidators from '../validators/routes';
 import { parseFilterDates, extendedQueryString } from '../logic/query';
+import RoutesEvents from '../logic/routes-events';
+
+const emitter = RoutesEvents();
 
 const query = extendedQueryString({
   started: {
@@ -197,6 +200,52 @@ export default {
 
       await RoutesLogic.unlinkOrders(route);
       await route.destroy();
+
+      return res.send({ status: 1 });
+    } catch (err) {
+      return next(err);
+    }
+  },
+  skipStop: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { user } = req;
+      const { id, customer_id } = req.params;
+
+      const route = await models.Routes.findOne({
+        where: {
+          id,
+          tour_id: {
+            [Sequelize.Op.in]: models.sequelize.literal(`(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`),
+          },
+        },
+      });
+
+      if (!route) {
+        throw createError(404, 'NOT_FOUND');
+      }
+
+      const index = route.pathway.findIndex((p) => p.id === parseInt(customer_id, 10));
+
+      if (index === -1) {
+        throw createError(400, 'INVALID_CUSTOMER');
+      }
+
+      if (route.pathway[index].Orders.some((o) => o.delivered_at)) {
+        throw createError(400, 'INVALID_CUSTOMER');
+      }
+
+      const newPathway = [
+        ...route.pathway.slice(0, index),
+        {
+          ...route.pathway[index],
+          skipped_at: DateTime.now().toISO(),
+        },
+        ...route.pathway.slice(index + 1),
+      ];
+
+      await route.update({ pathway: newPathway });
+
+      emitter.emit('route-updated', { id });
 
       return res.send({ status: 1 });
     } catch (err) {

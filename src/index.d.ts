@@ -96,6 +96,7 @@ declare type CustomerWithOrders = Omit<
   Customer, 'active' | 'created_at' | 'updated_at' | 'sms_notifications' | 'email_notifications' | 'supplier_id'
 > & {
   Orders: Order[];
+  skipped_at?: string;
 };
 
 declare type Route = {

@@ -159,24 +159,27 @@ export const createRoute = async (
   const transportAgent = await createTransportAgent();
   const tour = await createTour(supplier, transportAgent);
   const order_ids = [];
-  const customers = await Promise.all(
-    _customers.map(async (numberOfOrders, ii) => {
-      const customer = await createCustomer(supplier, tour, { tour_position: ii });
-      let i = 0;
-      let orders = [];
+  let i = 0;
+  const customers = [];
 
-      while (i < numberOfOrders) {
-        const order = await createOrder(supplier, customer);
+  while (i < _customers.length) {
+    const customer = await createCustomer(supplier, tour, { tour_position: i });
+    let j = 0;
+    let orders = [];
 
-        orders.push(order);
-        order_ids.push(order.id);
+    while (j < _customers[i]) {
+      const order = await createOrder(supplier, customer);
 
-        i += 1;
-      }
+      orders.push(order);
+      order_ids.push(order.id);
 
-      return { customer, orders };
-    })
-  );
+      j += 1;
+    }
+
+    customers.push({ customer, orders });
+
+    i += 1;
+  };
 
   const route = await RoutesLogic.create({ order_ids, tour_id: tour.id }, user);
   const token = UsersLogic.getDriverJWT(route);

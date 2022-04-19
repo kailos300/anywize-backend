@@ -3,7 +3,7 @@ import getenv from 'getenv';
 import debug from 'debug';
 import Salesman from './salesman';
 
-const Debug = debug('anywize');
+const Debug = debug('anywize:routes-ordering');
 const MAPBOX_API_ACCESS_TOKEN = getenv('ANYWIZE_MAPBOX_API_ACCESS_TOKEN');
 
 type SolutionPoint = {
@@ -18,7 +18,7 @@ const matrix = async (customers) => {
     const coordinates = customers.reduce((acc, cur) => {
       return `${acc ? `${acc};` : ""}${cur.longitude},${cur.latitude}`;
     }, '');
-
+    Debug(coordinates);
     const { data } = await axios.get(
       `https://api.mapbox.com/directions-matrix/v1/mapbox/driving/${coordinates}`,
       {
