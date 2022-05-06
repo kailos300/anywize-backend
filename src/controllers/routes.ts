@@ -246,6 +246,7 @@ export default {
       await route.update({ pathway: newPathway });
 
       emitter.emit('route-updated', { id });
+      emitter.emit('route-stop-skipped', { id });
 
       return res.send({ status: 1 });
     } catch (err) {

@@ -22,6 +22,12 @@ export default (io) => {
     io.to(String(data.id)).emit('route-updated', data);
   });
 
+  emitter.on('route-stop-skipped', (data: RouteUpdatedEvent) => {
+    Debug(`Route stop skipped #${data.id}`);
+
+    io.to(String(data.id)).emit('route-stop-skipped', data);
+  });
+
   io
     .use(function(socket, next) {
       if (!socket.handshake.query || !socket.handshake.query.token) {
