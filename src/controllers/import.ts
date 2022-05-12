@@ -34,7 +34,7 @@ export default {
         defaults: {
           supplier_id: supplier.id,
           transport_agent_id: ta.id,
-          number: body.ID_Tour,
+          number: body.ID_Tour.trim(),
           name: body.Tour_Name,
           description: 'Imported tour',
         },
@@ -51,7 +51,7 @@ export default {
               supplier_id: supplier.id,
               tour_id: tour.id,
               tour_position: c.Prioritaet,
-              number: c.ID_Kontakte,
+              number: c.ID_Kontakte.trim(),
               name: c.Firma,
               alias: c.Firma,
               street: c.Strasse,
@@ -64,7 +64,7 @@ export default {
             if (!isNew) {
               return customer.update({
                 tour_position: c.Prioritaet,
-                number: c.ID_Kontakte,
+                number: c.ID_Kontakte.trim(),
                 name: c.Firma,
                 alias: c.Firma,
                 street: c.Strasse,
