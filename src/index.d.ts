@@ -32,6 +32,7 @@ declare type TransportAgent = {
 
 declare type Supplier = {
   id: number;
+  number: string;
   name: string;
   alias: string;
   email: string;
@@ -189,4 +190,35 @@ declare type ImportBody = {
     Name_Versender: string;
   }[];
   Lieferungen: ImportLieferungen[];
+};
+
+declare type ImportBodyComplete = {
+  supplier_id: string;
+  Tour: {
+    id: string;
+    name: string;
+  };
+  Customers: {
+    id: string;
+    name: string;
+    alias: string;
+    street: string;
+    street_number: string;
+    city: string;
+    zipcode: string;
+    country: string;
+    deposit_agreement: DepositAgreement;
+    keybox_code: string;
+    latitude: string;
+    longitude: string;
+    contact_name: string;
+    contact_surname: string;
+    email: string;
+    phone: string;
+  }[];
+  Orders: {
+    number: string;
+    customer_id: string;
+    description: string;
+  }[];
 };
