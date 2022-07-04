@@ -483,4 +483,188 @@ describe('Import tests', () => {
       '97580',
     ].sort());
   });
+
+  it.only('POST /api/import/complete should import the complete stuff', async () => {
+    let res = await request
+      .post('/api/import/complete')
+      .send({})
+
+    expect(res.status).equal(400);
+    expect(res.body.errors).eql({
+      supplier_id: '"supplier_id" is required',
+      Tour: '"Tour" is required',
+      Customers: '"Customers" is required',
+      Orders: '"Orders" is required'
+    });
+
+    res = await request
+      .post('/api/import/complete')
+      .send({
+        supplier_id: supplier.number,
+        Tour: {
+          id: '15123-22',
+          name: 'Test tour for import complete',
+        },
+        Customers: [{
+          id: '10-22',
+          name: 'Customer I',
+          alias: 'Customer I alias',
+          street: 'Street Gdo',
+          street_number: '1312',
+          city: 'BERLIN',
+          zipcode: '2930',
+          country: 'DE',
+          deposit_agreement: 'NONE',
+          keybox_code: null,
+          latitude: 10.12312,
+          longitude: 8.123,
+          contact_name: 'Jesus',
+          contact_surname: 'Cristo',
+          email: 'bla@bla.com',
+          phone: '1231231232'
+        }, {
+          id: '11-22',
+          name: 'Customer II',
+          alias: 'Customer II alias',
+          street: 'Street Gdo',
+          street_number: '1312',
+          city: 'BERLIN',
+          zipcode: '2930',
+          country: 'DE',
+          deposit_agreement: 'NONE',
+          keybox_code: null,
+          latitude: 10.12312,
+          longitude: 8.123,
+          contact_name: 'Jesus',
+          contact_surname: 'Cristo',
+          email: 'bla@bla.com',
+          phone: '1231231232'
+        }],
+        Orders: [{
+          customer_id: '11-22',
+          number: '1',
+          description: 'order 1',
+        }, {
+          customer_id: '11-22',
+          number: '2',
+          description: 'order 2',
+        }, {
+          customer_id: '10-22',
+          number: '3',
+          description: 'order 3',
+        }],
+      });
+
+    expect(res.status).equal(200);
+    expect(res.body.pathway.length).equal(2);
+
+    const first = res.body.pathway.find((p) => p.number === '10-22');
+    expect(first.Orders.length).equal(1);
+    expect(first.Orders[0].description).equal('order 3');
+
+    const second = res.body.pathway.find((p) => p.number === '11-22');
+    expect(second.Orders.length).equal(2);
+    expect(second.Orders.map((o) => o.number).sort()).eql(['1', '2']);
+
+    const one = await models.Customers.findOne({
+      where: { number: '11-22' },
+      raw: true,
+    });
+    expect(one.name).equal('Customer II');
+    expect(one.alias).equal('Customer II alias');
+    expect(one.street).equal('Street Gdo');
+    expect(one.street_number).equal('1312');
+    expect(one.city).equal('BERLIN');
+    expect(one.zipcode).equal('2930');
+    expect(one.country).equal('DE');
+    expect(one.deposit_agreement).equal('NONE');
+    expect(one.keybox_code).equal(null);
+    expect(one.coordinates).eql({
+      type: 'Point',
+      coordinates: [8.123, 10.12312],
+    });
+    expect(one.contact_name).equal('Jesus');
+    expect(one.contact_surname).equal('Cristo');
+    expect(one.email).equal('bla@bla.com');
+    expect(one.phone).equal('1231231232');
+
+    const two = await models.Customers.findOne({
+      where: { number: '10-22' },
+      raw: true,
+    });
+    expect(two.name).equal('Customer I');
+    expect(two.alias).equal('Customer I alias');
+    expect(two.street).equal('Street Gdo');
+    expect(two.street_number).equal('1312');
+    expect(two.city).equal('BERLIN');
+    expect(two.zipcode).equal('2930');
+    expect(two.country).equal('DE');
+    expect(two.deposit_agreement).equal('NONE');
+    expect(two.keybox_code).equal(null);
+    expect(two.coordinates).eql({
+      type: 'Point',
+      coordinates: [8.123, 10.12312],
+    });
+    expect(two.contact_name).equal('Jesus');
+    expect(two.contact_surname).equal('Cristo');
+    expect(two.email).equal('bla@bla.com');
+    expect(two.phone).equal('1231231232');
+
+    let tour = await models.Tours.findOne({
+      where: { number: '15123-22' },
+      raw: true,
+    });
+    expect(tour.name).equal('Test tour for import complete');
+
+    // sending again should not re-create two times the crap
+    res = await request
+      .post('/api/import/complete')
+      .send({
+        supplier_id: supplier.number,
+        Tour: {
+          id: '15123-22',
+          name: 'Test tour for import complete',
+        },
+        Customers: [{
+          id: '10-22',
+          name: 'Customer I',
+          alias: 'Customer I alias alias',
+          street: 'Street Gdo',
+          street_number: '1312',
+          city: 'BERLIN',
+          zipcode: '2930',
+          country: 'DE',
+          deposit_agreement: 'NONE',
+          keybox_code: null,
+          latitude: 10.12312,
+          longitude: 8.123,
+          contact_name: 'Jesus',
+          contact_surname: 'Cristo',
+          email: 'bla@bla.com.ar',
+          phone: '1231231232'
+        }],
+        Orders: [{
+          customer_id: '10-22',
+          number: '3',
+          description: 'order 3',
+        }],
+      });
+
+    expect(res.status).equal(200);
+    expect(res.body.pathway.length).equal(1);
+
+    const sum = await models.Customers.findAll({
+      where: { number: '10-22' },
+      raw: true,
+    });
+    expect(sum.length).equal(1);
+    expect(sum[0].alias).equal('Customer I alias alias');
+    expect(sum[0].email).equal('bla@bla.com.ar');
+
+    let tours = await models.Tours.findAll({
+      where: { number: '15123-22' },
+      raw: true,
+    });
+    expect(tours.length).equal(1);
+  });
 });
