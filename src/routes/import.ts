@@ -13,12 +13,11 @@ router.post('/', ImportCtrl.import);
  * Customers related to those orders. For each data model, information is required in order to create the records if they do not exist in the
  * anywize system as well as to find them in case they were already imported.
  *
- * @apiParam {String} supplier_id Unique identifier provided by us to be used in every request
  * @apiParam {Object} Tour
  * @apiParam {String} Tour.id Unique identifier in the third party system for a Tour
  * @apiParam {String} Tour.name Tour's name
- * @apiParam {Object[]} Customers Array of Customers that are relevant for the current orders to be created
- * @apiParam {String} Customers.n.id: Unique identifier in the third party system for a Customer
+ * @apiParam {Object} Customers Array of Customers that are relevant for the current orders to be created
+ * @apiParam {String} Customers.n.id Unique identifier in the third party system for a Customer
  * @apiParam {String} Customers.n.name Customer's name
  * @apiParam {String} [Customers.n.alias] Customer's alias
  * @apiParam {String} Customers.n.street Customer's address street
@@ -34,10 +33,20 @@ router.post('/', ImportCtrl.import);
  * @apiParam {String} [Customers.n.contact_surname] Contact person's name inside the Customer's organization
  * @apiParam {String} Customers.n.email Customer's email
  * @apiParam {String} Customers.n.phone Customer's phone number
- * @apiParam {Object[]} Orders Array of Orders to be created. Must have a reference to a Customer inside the "Customers" array
+ * @apiParam {Object} Orders Array of Orders to be created. Must have a reference to a Customer inside the "Customers" array
  * @apiParam {String} [Orders.n.number] Identification for the Order
  * @apiParam {String} Orders.n.customer_id Reference to one of the Customers inside the "Customers" array
  * @apiParam {String} Orders.n.description Description of the Order or any relevant information
+ * @apiParam {Object} Orders.n.Packages
+ * @apiParam {Number} Orders.n.Packages.n.package_id
+ * @apiParam {String} Orders.n.Packages.n.description
+ * @apiParam {Number} [Orders.n.Packages.n.dangerous_goods]
+ * @apiParam {Number} [Orders.n.Packages.n.weight] in grams
+ * @apiParam {Number} [Orders.n.Packages.n.length] in cm
+ * @apiParam {Number} [Orders.n.Packages.n.width] in cm
+ * @apiParam {Number} [Orders.n.Packages.n.height] in cm
+ * @apiParam {String="'XS','S','M','L','XL'"} [Orders.n.Packages.n.size]
+ * @apiParam {String} supplier_id Unique identifier provided by us to be used in every request
  *
  * @apiParamExample {json} Request-Example:
  *     {
@@ -68,6 +77,16 @@ router.post('/', ImportCtrl.import);
  *          customer_id: "10-22",
  *          number: "3",
  *          description: "order 3",
+ *          Packages: [{
+ *            package_id: 1,
+ *            description: "something",
+ *            dangerous_goods: 5
+ *            weight: 500
+ *            length: 10,
+ *            width: 10,
+ *            height: 10,
+ *            size: "XS"
+ *          }]
  *        }],
  *     }
  *
