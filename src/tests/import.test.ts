@@ -484,7 +484,7 @@ describe('Import tests', () => {
     ].sort());
   });
 
-  it.only('POST /api/import/complete should import the complete stuff', async () => {
+  it('POST /api/import/complete should import the complete stuff', async () => {
     let res = await request
       .post('/api/import/complete')
       .send({})
@@ -492,6 +492,7 @@ describe('Import tests', () => {
     expect(res.status).equal(400);
     expect(res.body.errors).eql({
       supplier_id: '"supplier_id" is required',
+      secret: '"secret" is required',
       Tour: '"Tour" is required',
       Customers: '"Customers" is required',
       Orders: '"Orders" is required'
@@ -501,6 +502,7 @@ describe('Import tests', () => {
       .post('/api/import/complete')
       .send({
         supplier_id: supplier.number,
+        secret: supplier.secret,
         Tour: {
           id: '15123-22',
           name: 'Test tour for import complete',
@@ -621,6 +623,7 @@ describe('Import tests', () => {
       .post('/api/import/complete')
       .send({
         supplier_id: supplier.number,
+        secret: supplier.secret,
         Tour: {
           id: '15123-22',
           name: 'Test tour for import complete',

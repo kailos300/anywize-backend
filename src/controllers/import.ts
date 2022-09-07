@@ -15,6 +15,7 @@ export default {
       const supplier = await models.Suppliers.findOne({
         where: {
           number: body.supplier_id.trim(),
+          secret: body.secret.trim(),
         },
         raw: true,
       });

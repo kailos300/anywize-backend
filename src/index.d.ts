@@ -33,6 +33,7 @@ declare type TransportAgent = {
 declare type Supplier = {
   id: number;
   number: string;
+  secret: string;
   name: string;
   alias: string;
   email: string;
@@ -194,6 +195,7 @@ declare type ImportBody = {
 
 declare type ImportBodyComplete = {
   supplier_id: string;
+  secret: string;
   Tour: {
     id: string;
     name: string;

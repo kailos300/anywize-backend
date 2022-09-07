@@ -1,7 +1,13 @@
+import { v1 } from 'uuid';
+
 export default function(sequelize, DataTypes) {
   const Suppliers = sequelize.define('Suppliers', {
     number: {
       type: DataTypes.STRING,
+    },
+    secret: {
+      type: DataTypes.STRING,
+      defaultValue: () => v1(),
     },
     name: {
       type: DataTypes.STRING,

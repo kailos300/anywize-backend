@@ -47,10 +47,12 @@ router.post('/', ImportCtrl.import);
  * @apiParam {Number} [Orders.n.Packages.n.height] in cm
  * @apiParam {String="'XS','S','M','L','XL'"} [Orders.n.Packages.n.size]
  * @apiParam {String} supplier_id Unique identifier provided by us to be used in every request
+ * @apiParam {String} secret Secret hash provided by us
  *
  * @apiParamExample {json} Request-Example:
  *     {
  *        supplier_id: "155-DO-2022",
+ *        secret: "50799ff97556ab5d9355bd0aa5375805",
  *        Tour: {
  *          id: "15123-22",
  *          name: "Test tour for import complete",

@@ -3,6 +3,7 @@ import Validate from './index';
 
 const ImportCompleteSchema = Joi.object().keys({
   supplier_id: Joi.string().required(),
+  secret: Joi.string().required(),
   Tour: Joi.object().keys({
     id: Joi.string().required(),
     name: Joi.string().required(),
