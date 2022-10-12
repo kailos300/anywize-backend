@@ -482,9 +482,18 @@ describe('Import tests', () => {
       '97507',
       '97580',
     ].sort());
+
+    spy.restore();
   });
 
   it('POST /api/import/complete should import the complete stuff', async () => {
+    const stub = sinon.stub(CustomersLogic, 'geocode').callsFake(() => Promise.resolve({
+      coordinates: {
+        type: 'Point',
+        coordinates: [10, 11],
+      },
+    }));
+
     let res = await request
       .post('/api/import/complete')
       .send({})
@@ -618,6 +627,8 @@ describe('Import tests', () => {
     });
     expect(tour.name).equal('Test tour for import complete');
 
+    expect(stub.callCount).equal(0);
+
     // sending again should not re-create two times the crap
     res = await request
       .post('/api/import/complete')
@@ -639,8 +650,21 @@ describe('Import tests', () => {
           country: 'DE',
           deposit_agreement: 'NONE',
           keybox_code: null,
-          latitude: 10.12312,
-          longitude: 8.123,
+          contact_name: 'Jesus',
+          contact_surname: 'Cristo',
+          email: 'bla@bla.com.ar',
+          phone: '1231231232'
+        }, {
+          id: '10-23',
+          name: 'Customer II',
+          alias: 'Customer II alias alias',
+          street: 'Customer 2 street',
+          street_number: '666',
+          city: 'San Pedro',
+          zipcode: '2930',
+          country: 'DE',
+          deposit_agreement: 'NONE',
+          keybox_code: null,
           contact_name: 'Jesus',
           contact_surname: 'Cristo',
           email: 'bla@bla.com.ar',
@@ -650,8 +674,18 @@ describe('Import tests', () => {
           customer_id: '10-22',
           number: '3',
           description: 'order 3',
+          Packages: [{
+            package_id: 1,
+            description: "something",
+            dangerous_goods: 5,
+            weight: 500,
+            length: 10,
+            width: 10,
+            height: 10,
+            size: "XS"
+          }],
         }],
-      });
+      });console.log(res.body)
 
     expect(res.status).equal(200);
     expect(res.body.pathway.length).equal(1);
@@ -669,5 +703,20 @@ describe('Import tests', () => {
       raw: true,
     });
     expect(tours.length).equal(1);
+
+    expect(stub.callCount).equal(1);
+    expect(stub.args[0][0]).equal(`Customer 2 street 666, San Pedro, Germany`);
+
+    const newCustomer = await models.Customers.findAll({
+      where: { number: '10-23' },
+      raw: true,
+    });
+    expect(newCustomer.length).equal(1);
+    expect(newCustomer[0].coordinates).eql({
+      type: 'Point',
+      coordinates: [10, 11],
+    });
+
+    stub.restore();
   });
 });

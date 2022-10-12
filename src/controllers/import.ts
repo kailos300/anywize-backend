@@ -10,6 +10,8 @@ export default {
     try {
       const { body }: { body: ImportBodyComplete } = req;
 
+      console.log(body);
+
       await ImportValidators.complete(body);
 
       const supplier = await models.Suppliers.findOne({
@@ -69,10 +71,16 @@ export default {
               city: c.city,
               zipcode: c.zipcode,
               country: c.country || 'DE',
-              coordinates: {
-                type: 'Point',
-                coordinates: [c.longitude, c.latitude],
-              },
+              ...(
+                c.longitude && c.latitude
+                  ? {
+                    coordinates: {
+                      type: 'Point',
+                      coordinates: [c.longitude, c.latitude],
+                    },
+                  }
+                  : {}
+              ),
               deposit_agreement: c.deposit_agreement,
               keybox_code: c.keybox_code,
               email: c.email,
@@ -80,7 +88,13 @@ export default {
               contact_name: c.contact_name,
               contact_surname: c.contact_surname,
             }
-          }).then(([customer, isNew]) => {
+          }).then(async ([customer, isNew]) => {
+            let _res = null;
+
+            if (customer.coordinates?.coordinates[0] === 0 && customer.coordinates?.coordinates[1] === 0) {
+              _res = await CustomersLogic.geocode(`${customer.street} ${customer.street_number}, ${customer.city}, Germany`);
+            }
+
             if (!isNew) {
               return customer.update({
                 name: c.name,
@@ -90,17 +104,16 @@ export default {
                 city: c.city,
                 zipcode: c.zipcode,
                 country: c.country || 'DE',
-                coordinates: {
-                  type: 'Point',
-                  coordinates: [c.longitude, c.latitude],
-                },
                 deposit_agreement: c.deposit_agreement,
                 keybox_code: c.keybox_code,
                 email: c.email,
                 phone: c.phone,
                 contact_name: c.contact_name,
                 contact_surname: c.contact_surname,
+                ..._res
               }).then((_c) => _c.toJSON());
+            } else if (_res) {
+              return customer.update({ ..._res }, { logging: console.log }).then((_c) => _c.toJSON());;
             }
 
             return customer.toJSON();

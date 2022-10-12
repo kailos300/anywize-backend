@@ -27,8 +27,8 @@ router.post('/', ImportCtrl.import);
  * @apiParam {String} [Customers.n.country] 2 letter country ISO code. Defaults to "DE"
  * @apiParam {String="'NONE', 'BRING_KEY', 'KEY_BOX'"} Customers.n.deposit_agreement Rule by which packages are deposited, if applied
  * @apiParam {String} [Customers.n.keybox_code] When "deposit_agreement = 'KEY_BOX'", the code which is required to access said box.
- * @apiParam {String} Customers.n.latitude Customer's location latitude
- * @apiParam {String} Customers.n.longitude Customer's location longitude
+ * @apiParam {String} [Customers.n.latitude] Customer's location latitude
+ * @apiParam {String} [Customers.n.longitude] Customer's location longitude
  * @apiParam {String} [Customers.n.contact_name] Contact person's name inside the Customer's organization
  * @apiParam {String} [Customers.n.contact_surname] Contact person's name inside the Customer's organization
  * @apiParam {String} Customers.n.email Customer's email

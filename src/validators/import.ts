@@ -24,8 +24,8 @@ const ImportCompleteSchema = Joi.object().keys({
         then: Joi.string().required(),
         otherwise: Joi.string().optional().allow(null, ''),
       }),
-      latitude: Joi.number().precision(8).required(),
-      longitude: Joi.number().precision(8).required(),
+      latitude: Joi.number().precision(8).optional().allow(null),
+      longitude: Joi.number().precision(8).optional().allow(null),
       contact_name: Joi.string().optional().allow(null),
       contact_surname: Joi.string().optional().allow(null),
       email: Joi.string().email().required(),
@@ -37,6 +37,7 @@ const ImportCompleteSchema = Joi.object().keys({
       number: Joi.string().optional().allow(null),
       customer_id: Joi.string().required(),
       description: Joi.string().required(),
+      Packages: Joi.array().optional().allow(null),
     })
   ).min(1).required(),
 });
