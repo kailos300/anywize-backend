@@ -3,6 +3,7 @@ import Sequelize from 'sequelize';
 import orderBy from 'lodash/orderBy';
 import sortBy from 'lodash/sortBy';
 import randomString from 'randomstring';
+import WriteXLSXFile from 'write-excel-file/node';
 import { DateTime } from 'luxon';
 import models from '../models';
 import S3Logic from './s3';
@@ -284,5 +285,67 @@ export default {
     });
 
     return route;
+  },
+  export: async ({ from, to }, user: User) => {
+    console.log(from, to);
+
+    const schema = [
+      'Tour ID',
+      'Tour Name',
+      'Start date',
+      'End date',
+      '# Stops',
+      '# Stops delivered',
+      'Driver',
+      'Stops',
+    ].map((key) => ({
+      column: key,
+      type: String,
+      value: (v) => {
+        return String(v[key]);
+      },
+    }));
+
+    const routes = await models.Routes.findAll({
+      start_date: {
+        [Sequelize.Op.gte]: from,
+        [Sequelize.Op.lte]: to,
+        [Sequelize.Op.not]: null,
+      },
+      tour_id: {
+        [Sequelize.Op.in]: models.sequelize.literal(`(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`),
+      },
+      include: [{
+        model: models.Tours,
+        attributes: ['id', 'name'],
+      }]
+    });
+
+    let data = [];
+
+    for (const route of routes) {
+      console.log(route.start_date);
+
+      const row = {
+        'Tour ID': route.uuid,
+        'Tour Name': route.Tour?.name,
+        'Start date': route.start_date ? DateTime.fromJSDate(route.start_date).toFormat('dd.MM.yyyy HH:mm'): '-',
+        'End date': route.end_date ? DateTime.fromJSDate(route.start_date).toFormat('dd.MM.yyyy HH:mm') : '-',
+        '# Stops': route.pathway.length,
+        '# Stops delivered': route.pathway.filter((p) => {
+          return !p.skipped_at && p.Orders.every((o) => !!o.delivered_at);
+        }).length,
+        'Driver': route.driver_name || '-',
+        'Stops': route.pathway.map((p) => {
+          return `${p.name}: ${p.street} ${p.street_number}, ${p.city} (${p.zipcode}), ${p.country}`;
+        }).join('\n'),
+      };
+
+      data.push(row);
+    }
+
+    return await WriteXLSXFile(data, {
+      schema,
+    });
   },
 };

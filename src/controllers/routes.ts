@@ -41,6 +41,23 @@ const query = extendedQueryString({
 });
 
 export default {
+  export: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { user } = req;
+      const { from, to } = req.params;
+
+      await RoutesValidators.export({ from, to });
+
+      res.set('Content-disposition', 'attachment; filename=export.xlsx');
+      res.set("content-type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+      const stream = await RoutesLogic.export({ from, to }, user);
+
+      stream.pipe(res);
+    } catch (err) {
+      return next(err);
+    }
+  },
   list: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { user } = req;

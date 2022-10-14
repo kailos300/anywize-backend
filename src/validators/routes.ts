@@ -6,6 +6,12 @@ const CreateSchema = Joi.object().keys({
   tour_id: Joi.number().integer().required(),
 });
 
+const ExportSchema = Joi.object().keys({
+  from: Joi.date().iso().required(),
+  to: Joi.date().iso().required(),
+});
+
 export default {
   create: (data) => Validate(data, CreateSchema),
+  export: (data) => Validate(data, ExportSchema),
 };

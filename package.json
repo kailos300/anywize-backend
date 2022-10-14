@@ -54,7 +54,8 @@
     "rimraf": "^3.0.2",
     "sequelize": "^6.6.2",
     "socket.io": "^4.2.0",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "write-excel-file": "^1.4.13"
   },
   "devDependencies": {
     "@types/chai": "^4.2.18",
