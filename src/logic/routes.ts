@@ -297,7 +297,46 @@ export default {
       '# Stops',
       '# Stops delivered',
       'Driver',
-      'Stops',
+      'Stop_1',
+      'Stop_2',
+      'Stop_3',
+      'Stop_4',
+      'Stop_5',
+      'Stop_6',
+      'Stop_7',
+      'Stop_8',
+      'Stop_9',
+      'Stop_10',
+      'Stop_11',
+      'Stop_12',
+      'Stop_13',
+      'Stop_14',
+      'Stop_15',
+      'Stop_16',
+      'Stop_17',
+      'Stop_18',
+      'Stop_19',
+      'Stop_20',
+      'Stop_21',
+      'Stop_22',
+      'Stop_23',
+      'Stop_24',
+      'Stop_25',
+      'Stop_26',
+      'Stop_27',
+      'Stop_28',
+      'Stop_29',
+      'Stop_30',
+      'Stop_31',
+      'Stop_32',
+      'Stop_33',
+      'Stop_34',
+      'Stop_35',
+      'Stop_36',
+      'Stop_37',
+      'Stop_38',
+      'Stop_39',
+      'Stop_40',
     ].map((key) => ({
       column: key,
       type: String,
@@ -307,13 +346,15 @@ export default {
     }));
 
     const routes = await models.Routes.findAll({
-      start_date: {
-        [Sequelize.Op.gte]: from,
-        [Sequelize.Op.lte]: to,
-        [Sequelize.Op.not]: null,
-      },
-      tour_id: {
-        [Sequelize.Op.in]: models.sequelize.literal(`(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`),
+      where: {
+        start_date: {
+          [Sequelize.Op.gte]: from,
+          [Sequelize.Op.lte]: to,
+          [Sequelize.Op.not]: null,
+        },
+        tour_id: {
+          [Sequelize.Op.in]: models.sequelize.literal(`(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`),
+        },
       },
       include: [{
         model: models.Tours,
@@ -336,10 +377,15 @@ export default {
           return !p.skipped_at && p.Orders.every((o) => !!o.delivered_at);
         }).length,
         'Driver': route.driver_name || '-',
-        'Stops': route.pathway.map((p) => {
-          return `${p.name}: ${p.street} ${p.street_number}, ${p.city} (${p.zipcode}), ${p.country}`;
-        }).join('\n'),
       };
+
+      route.pathway.forEach((p, i) => {
+        row[`Stop_${i + 1}`] = `${p.name}: ${p.street} ${p.street_number}, ${p.city} (${p.zipcode}), ${p.country}`;
+      });
+
+      (Array(40 - route.pathway.length).join('.').split('.')).forEach((v, i) => {
+        row[`Stop_${i + route.pathway.length}`] = '';
+      });
 
       data.push(row);
     }
