@@ -1,6 +1,6 @@
 {
   "name": "anywize",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "engines": {
     "node": ">=14.0.0",
     "yarn": "1.x.x"
