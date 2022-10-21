@@ -486,6 +486,139 @@ describe('Import tests', () => {
     spy.restore();
   });
 
+  it.skip('Import Tour_12_Morgens bug 21-10-2022', async () => {
+    /*const spy = sinon.stub(CustomersLogic, 'geocode').callsFake(() => Promise.resolve({
+      coordinates: {
+        type: 'Point',
+        coordinates: [1, 0],
+      },
+    }));*/
+
+    const data = {
+      "Lieferanten_ID": "1",
+      "ID_Tour": " 12",
+      "Tour_Name": "Tour 02 Rot",
+      "LieferDatum": "18.10.2022",
+      "Abfahrt": "Morgens",
+      "erstelltAm": "20.10.2022 20:19:27",
+      "Kontakte": [
+        {
+          "ID_Kontakte": "1792",
+          "Firma": "Stalf GmbH",
+          "PLZ": "79117",
+          "Ort": "Freiburg",
+          "Strasse": "Kapplerstr. 52",
+          "Hausnummer": "",
+          "Prioritaet": "5029",
+          "erstelltAm": "05.12.2021 18:00:00",
+          "geaendertAm": "20.05.2022 11:40:09"
+        },
+        {
+          "ID_Kontakte": "1975",
+          "Firma": "Rieder 1a Autoservice",
+          "PLZ": "79254",
+          "Ort": "Oberried",
+          "Strasse": "Hauptstr. 72",
+          "Hausnummer": "",
+          "Prioritaet": "2070",
+          "erstelltAm": "05.12.2021 18:00:00",
+          "geaendertAm": "07.02.2022 13:54:12"
+        },
+        {
+          "ID_Kontakte": "2325",
+          "Firma": "Bach KFZ-Landmaschinen",
+          "PLZ": "79822",
+          "Ort": "Titisee-Neustadt",
+          "Strasse": "Jostalstr. 26",
+          "Hausnummer": "",
+          "Prioritaet": "2054",
+          "erstelltAm": "05.12.2021 18:00:00",
+          "geaendertAm": "07.02.2022 13:50:40"
+        },
+        {
+          "ID_Kontakte": "2415",
+          "Firma": "Reich Bosch Car Service",
+          "PLZ": "79271",
+          "Ort": "St. Peter",
+          "Strasse": "Jörgleweg 19",
+          "Hausnummer": "",
+          "Prioritaet": "2060",
+          "erstelltAm": "05.12.2021 18:00:00",
+          "geaendertAm": "07.02.2022 13:51:58"
+        },
+        {
+          "ID_Kontakte": "3009",
+          "Firma": "Thomas Ruf Karosserie- u. Lackierinstand.",
+          "PLZ": "79271",
+          "Ort": "St. Peter",
+          "Strasse": "Jörgleweg",
+          "Hausnummer": "17",
+          "Prioritaet": "3261",
+          "erstelltAm": "05.12.2021 18:00:00",
+          "geaendertAm": "07.02.2022 16:27:57"
+        }
+      ],
+      "Versender": [
+        { "ID_Versender": "2", "Name_Versender": "Kestenholz" },
+        { "ID_Versender": "3", "Name_Versender": "Maertin GmbH" },
+        { "ID_Versender": "1", "Name_Versender": "Schmolck" },
+        { "ID_Versender": "17", "Name_Versender": "Schmolck02" },
+        { "ID_Versender": "18", "Name_Versender": "Schmolck03" },
+        { "ID_Versender": "19", "Name_Versender": "Schmolck04" }
+      ],
+      "Lieferungen": [
+        {
+          "tbl_Lieferung.ID_Lieferung": "121726",
+          "Lieferscheinnummer": "519801",
+          "Packstuecke": "1",
+          "FRD_ID_Versender": "3",
+          "FRD_ID_Kontakte": "1975",
+          "erstelltAm": "17.10.2022 10:40:13"
+        },
+        {
+          "tbl_Lieferung.ID_Lieferung": "121737",
+          "Lieferscheinnummer": "S-321774-00",
+          "Packstuecke": "1",
+          "FRD_ID_Versender": "18",
+          "FRD_ID_Kontakte": "3009",
+          "erstelltAm": "17.10.2022 11:37:27"
+        },
+        {
+          "tbl_Lieferung.ID_Lieferung": "121750",
+          "Lieferscheinnummer": "519949",
+          "Packstuecke": "1",
+          "FRD_ID_Versender": "3",
+          "FRD_ID_Kontakte": "2325",
+          "erstelltAm": "17.10.2022 12:44:26"
+        },
+        {
+          "tbl_Lieferung.ID_Lieferung": "121782",
+          "Lieferscheinnummer": "S-321821-00",
+          "Packstuecke": "1",
+          "FRD_ID_Versender": "18",
+          "FRD_ID_Kontakte": "2415",
+          "erstelltAm": "17.10.2022 15:18:54"
+        },
+        {
+          "tbl_Lieferung.ID_Lieferung": "121824",
+          "Lieferscheinnummer": "6823425/14441",
+          "Packstuecke": "1",
+          "FRD_ID_Versender": "2",
+          "FRD_ID_Kontakte": "1792",
+          "erstelltAm": "18.10.2022 07:30:05"
+        }
+      ]
+    };
+
+    let res = await request
+      .post('/api/import')
+      .send(data);
+
+    expect(res.status).equal(200);
+    expect(res.body.pathway.length).equal(5);
+    // spy.restore();
+  });
+
   it('POST /api/import/complete should import the complete stuff', async () => {
     const stub = sinon.stub(CustomersLogic, 'geocode').callsFake(() => Promise.resolve({
       coordinates: {

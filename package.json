@@ -12,6 +12,7 @@
     "clean": "rimraf dist",
     "build": "npm run clean && mkdir -p dist && node ./node_modules/esbuild-node-tsc/dist/index --config=esbuild.config.js && npm run apidoc",
     "test": "yarn truncateTestDatabase && yarn dbMigrateTest && NODE_ENV=test ts-mocha --require dotenv/config dotenv_config_path=.test.env --require ./src/index.ts 'src/tests/**/*.{js,ts}' -t 70000 --exit",
+    "runTest": "NODE_ENV=test ts-mocha --require dotenv/config dotenv_config_path=.test.env --require ./src/index.ts 'src/tests/**/*.{js,ts}' -t 70000 --exit",
     "test:coverage": "yarn truncateTestDatabase && yarn dbMigrateTest && NODE_ENV=test nyc ts-mocha --require dotenv/config dotenv_config_path=.test.env --require ./src/index.ts 'src/tests/**/*.{js,ts}' -t 70000 --exit",
     "dbMigrateTest": "NODE_ENV=test node -r dotenv/config -e 'require(\"./postgrator/postgrator.js\").migrate()' dotenv_config_path=.test.env",
     "truncateTestDatabase": "NODE_ENV=test node -r dotenv/config -e 'require(\"./postgrator/postgrator.js\").truncateDatabase()' dotenv_config_path=.test.env",

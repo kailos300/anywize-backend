@@ -201,6 +201,7 @@ export default {
             where: {
               number: c.ID_Kontakte.trim(),
               tour_id: tour.id,
+              supplier_id: supplier.id,
             },
             defaults: {
               supplier_id: supplier.id,
