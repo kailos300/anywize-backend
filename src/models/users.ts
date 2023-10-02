@@ -31,6 +31,20 @@ export default function(sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
     },
+    permissions: {
+      type: DataTypes.JSON,
+      defaultValue: () => ({
+        routesList: true,
+        routesMap: true,
+        routesCreateForDriver: true,
+        routesCreateDeliveryOrder: false,
+        ordersList: true,
+        ordersListSupplier: true,
+        ordersCreate: true,
+        customersCreate: true,
+        toursCreate: true,
+      }),
+    },
     updated_at: {
       type: DataTypes.DATE,
       defaultValue: () => new Date(),

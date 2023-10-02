@@ -21,6 +21,10 @@ export default function(sequelize, DataTypes) {
     number: {
       type: DataTypes.STRING,
     },
+    created_by_user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   }, {
     timestamps: false,
     tableName: 'orders',
