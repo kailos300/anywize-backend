@@ -5,6 +5,7 @@ import userHasSupplier from '../middlewares/userHasSupplier';
 const router = Router();
 
 router.get('/export/excel/:from/:to', userHasSupplier, RoutesCtrl.export);
+router.get('/document/:id', userHasSupplier, RoutesCtrl.pdf);
 
 /**
  * @api {get} /api/routes/:id Get single route

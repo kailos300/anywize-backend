@@ -126,7 +126,7 @@ const solveWithMatrix = async (start: SolutionPoint, customers: SolutionPoint[])
     return customers;
   }
 
-  if (process.env.NODE_ENV === 'test') {
+  if (process.env.NODE_ENV === 'test' ||process.env.NODE_ENV === 'development') {
     return orderBySalesman(start, customers);
   }
 

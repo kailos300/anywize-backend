@@ -1,23 +1,24 @@
-import { Request, Response, NextFunction } from 'express';
-import createError from 'http-errors';
-import Sequelize from 'sequelize';
-import * as ejs from 'ejs';
-import * as pdf from 'html-pdf';
-import { DateTime } from 'luxon';
-import models from '../models';
-import RoutesLogic from '../logic/routes';
-import S3Logic from '../logic/s3';
-import RoutesValidators from '../validators/routes';
-import { parseFilterDates, extendedQueryString } from '../logic/query';
-import RoutesEvents from '../logic/routes-events';
+import { Request, Response, NextFunction } from "express";
+import createError from "http-errors";
+import Sequelize from "sequelize";
+import { groupBy } from "lodash";
+import * as ejs from "ejs";
+import * as pdf from "html-pdf";
+import { DateTime } from "luxon";
+import models from "../models";
+import RoutesLogic from "../logic/routes";
+import S3Logic from "../logic/s3";
+import RoutesValidators from "../validators/routes";
+import { parseFilterDates, extendedQueryString } from "../logic/query";
+import RoutesEvents from "../logic/routes-events";
 
 const emitter = RoutesEvents();
 
 const query = extendedQueryString({
   started: {
-    key: 'start_date',
+    key: "start_date",
     func: (v) => {
-      if (v === '1') {
+      if (v === "1") {
         return {
           [Sequelize.Op.not]: null,
         };
@@ -27,9 +28,9 @@ const query = extendedQueryString({
     },
   },
   ended: {
-    key: 'end_date',
+    key: "end_date",
     func: (v) => {
-      if (v === '1') {
+      if (v === "1") {
         return {
           [Sequelize.Op.not]: null,
         };
@@ -48,8 +49,11 @@ export default {
 
       await RoutesValidators.export({ from, to });
 
-      res.set('Content-disposition', 'attachment; filename=export.xlsx');
-      res.set("content-type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+      res.set("Content-disposition", "attachment; filename=export.xlsx");
+      res.set(
+        "content-type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
 
       const stream = await RoutesLogic.export({ from, to }, user);
 
@@ -63,7 +67,13 @@ export default {
       const { user } = req;
       const { limit, offset } = req.query;
       const { where } = query(req.query);
-      const { start_date_to, start_date_from, end_date_from, end_date_to, ...rest } = where;
+      const {
+        start_date_to,
+        start_date_from,
+        end_date_from,
+        end_date_to,
+        ...rest
+      } = where;
       const whereDates = parseFilterDates(req.query);
 
       const { rows, count } = await models.Routes.findAndCountAll({
@@ -71,21 +81,35 @@ export default {
         offset: parseInt(<any>offset || 0, 10),
         where: {
           tour_id: {
-            [Sequelize.Op.in]: models.sequelize.literal(`(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`),
+            [Sequelize.Op.in]: models.sequelize.literal(
+              `(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`
+            ),
           },
           ...rest,
           ...whereDates,
         },
-        order: [['id', 'DESC']],
-        attributes: ['id', 'uuid', 'start_date', 'end_date', 'code', 'password', 'driver_name', 'driver_phone', 'pathway'],
-        include: [{
-          model: models.Tours,
-          attributes: ['id', 'name'],
-        }],
+        order: [["id", "DESC"]],
+        attributes: [
+          "id",
+          "uuid",
+          "start_date",
+          "end_date",
+          "code",
+          "password",
+          "driver_name",
+          "driver_phone",
+          "pathway",
+        ],
+        include: [
+          {
+            model: models.Tours,
+            attributes: ["id", "name"],
+          },
+        ],
         distinct: true,
       });
 
-      res.set('x-total-count', count);
+      res.set("x-total-count", count);
 
       return res.send(rows);
     } catch (err) {
@@ -98,14 +122,80 @@ export default {
       const { user } = req;
       const { allDriverLocations } = req.query;
 
-      const route = await RoutesLogic.get({
-        id,
-        tour_id: {
-          [Sequelize.Op.in]: models.sequelize.literal(`(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`),
+      const route = await RoutesLogic.get(
+        {
+          id,
+          tour_id: {
+            [Sequelize.Op.in]: models.sequelize.literal(
+              `(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`
+            ),
+          },
         },
-      }, !!allDriverLocations);
+        !!allDriverLocations
+      );
 
       return res.send(route);
+    } catch (err) {
+      return next(err);
+    }
+  },
+  pdf: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const { user } = req;
+
+      const record = await models.Routes.findOne({
+        where: {
+          id,
+          tour_id: {
+            [Sequelize.Op.in]: models.sequelize.literal(
+              `(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`
+            ),
+          },
+        },
+        include: [
+          {
+            model: models.Orders,
+            include: [
+              {
+                model: models.Users,
+                attributes: ["id", "name", "surname"],
+              },
+            ],
+          },
+          {
+            model: models.Tours,
+          },
+        ],
+      });
+
+      if (!record) {
+        throw createError(404, "NOT_FOUND");
+      }
+
+      const route = record.toJSON();
+      const orders = groupBy(route.Orders, "User.id");
+
+      ejs.renderFile(
+        `${process.cwd()}/templates/route-document.ejs`,
+        { route: route, orders: Object.values(orders), DateTime },
+        {},
+        (err, str) => {
+          if (err) {
+            throw err;
+          }
+
+          // res.setHeader('Content-Disposition', `attachment; filename=${route.uuid}.pdf`);
+
+          pdf.create(str).toStream(function (err, stream) {
+            if (err) {
+              throw err;
+            }
+
+            stream.pipe(res);
+          });
+        }
+      );
     } catch (err) {
       return next(err);
     }
@@ -119,15 +209,17 @@ export default {
         where: {
           id,
           tour_id: {
-            [Sequelize.Op.in]: models.sequelize.literal(`(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`),
+            [Sequelize.Op.in]: models.sequelize.literal(
+              `(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`
+            ),
           },
         },
-        attributes: ['id'],
+        attributes: ["id"],
         raw: true,
       });
 
       if (!route) {
-        throw createError(404, 'NOT_FOUND');
+        throw createError(404, "NOT_FOUND");
       }
 
       const record = await models.Stops.findOne({
@@ -135,47 +227,60 @@ export default {
           customer_id: customerId,
           route_id: route.id,
         },
-        include: [{
-          model: models.Customers,
-          required: true,
-          include: [{
-            model: models.Orders,
+        include: [
+          {
+            model: models.Customers,
             required: true,
-            where: {
-              route_id: route.id,
-            },
-            attributes: ['id', 'number', 'description'],
-          }],
-        }],
+            include: [
+              {
+                model: models.Orders,
+                required: true,
+                where: {
+                  route_id: route.id,
+                },
+                attributes: ["id", "number", "description"],
+              },
+            ],
+          },
+        ],
       });
 
       if (!record) {
-        throw createError(404, 'NOT_FOUND');
+        throw createError(404, "NOT_FOUND");
       }
 
       const stop = {
         ...record.toJSON(),
         ...record,
-        signature_file: record.signature_file ? S3Logic.getSignedUrl(record.signature_file) : null,
+        signature_file: record.signature_file
+          ? S3Logic.getSignedUrl(record.signature_file)
+          : null,
         pictures: record.pictures.map((p) => S3Logic.getSignedUrl(p)),
-        delivery_date_formatted: DateTime.fromISO(record.time.toISOString(), { zone: 'Europe/Berlin' }).toFormat('dd.MM.yyyy HH:mm'),
+        delivery_date_formatted: DateTime.fromISO(record.time.toISOString(), {
+          zone: "Europe/Berlin",
+        }).toFormat("dd.MM.yyyy HH:mm"),
       };
 
-      ejs.renderFile(`${process.cwd()}/templates/proof-of-delivery.ejs`, { stop }, {}, (err, str) => {
-        if (err) {
-          throw err;
-        }
-
-        // res.setHeader('Content-Disposition', `attachment; filename=${stop.Customer.alias}.pdf`);
-
-        pdf.create(str).toStream(function(err, stream) {
+      ejs.renderFile(
+        `${process.cwd()}/templates/proof-of-delivery.ejs`,
+        { stop },
+        {},
+        (err, str) => {
           if (err) {
             throw err;
           }
 
-          stream.pipe(res);
-        });
-       });
+          // res.setHeader('Content-Disposition', `attachment; filename=${stop.Customer.alias}.pdf`);
+
+          pdf.create(str).toStream(function (err, stream) {
+            if (err) {
+              throw err;
+            }
+
+            stream.pipe(res);
+          });
+        }
+      );
     } catch (err) {
       return next(err);
     }
@@ -202,7 +307,9 @@ export default {
         where: {
           id,
           tour_id: {
-            [Sequelize.Op.in]: models.sequelize.literal(`(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`),
+            [Sequelize.Op.in]: models.sequelize.literal(
+              `(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`
+            ),
           },
         },
       });
@@ -212,7 +319,7 @@ export default {
       }
 
       if (route.start_date) {
-        throw createError(400, 'ROUTE_STARTED');
+        throw createError(400, "ROUTE_STARTED");
       }
 
       await RoutesLogic.unlinkOrders(route);
@@ -232,23 +339,27 @@ export default {
         where: {
           id,
           tour_id: {
-            [Sequelize.Op.in]: models.sequelize.literal(`(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`),
+            [Sequelize.Op.in]: models.sequelize.literal(
+              `(SELECT tours.id FROM tours WHERE supplier_id = ${user.supplier_id})`
+            ),
           },
         },
       });
 
       if (!route) {
-        throw createError(404, 'NOT_FOUND');
+        throw createError(404, "NOT_FOUND");
       }
 
-      const index = route.pathway.findIndex((p) => p.id === parseInt(customer_id, 10));
+      const index = route.pathway.findIndex(
+        (p) => p.id === parseInt(customer_id, 10)
+      );
 
       if (index === -1) {
-        throw createError(400, 'INVALID_CUSTOMER');
+        throw createError(400, "INVALID_CUSTOMER");
       }
 
       if (route.pathway[index].Orders.some((o) => o.delivered_at)) {
-        throw createError(400, 'INVALID_CUSTOMER');
+        throw createError(400, "INVALID_CUSTOMER");
       }
 
       const newPathway = [
@@ -262,8 +373,8 @@ export default {
 
       await route.update({ pathway: newPathway });
 
-      emitter.emit('route-updated', { id });
-      emitter.emit('route-stop-skipped', { id });
+      emitter.emit("route-updated", { id });
+      emitter.emit("route-stop-skipped", { id });
 
       return res.send({ status: 1 });
     } catch (err) {

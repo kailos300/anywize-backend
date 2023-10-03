@@ -24,9 +24,11 @@ export default function(sequelize, DataTypes) {
     },
     code: {
       type: DataTypes.STRING,
+      allowNull: true,
     },
     password: {
       type: DataTypes.STRING,
+      allowNull: true,
     },
     active_driver_jwt: {
       type: DataTypes.STRING,

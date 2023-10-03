@@ -36,6 +36,7 @@ export default function(sequelize, DataTypes) {
     Orders.belongsTo(models.Suppliers, { foreignKey: 'supplier_id' });
     Orders.belongsTo(models.Customers, { foreignKey: 'customer_id' });
     Orders.belongsTo(models.Routes, { foreignKey: 'route_id' });
+    Orders.belongsTo(models.Users, { foreignKey: 'created_by_user_id' });
   };
 
   return Orders;
