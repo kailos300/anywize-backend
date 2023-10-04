@@ -8,6 +8,7 @@ UPDATE `users` SET `permissions` = JSON_OBJECT(
         "ordersListSupplier", true,
         "ordersCreate", true,
         "customersCreate", true,
+        "customersHideLocationRelatedFields", false,
         "toursCreate", true
 );
 

@@ -42,6 +42,7 @@ export default function(sequelize, DataTypes) {
         ordersListSupplier: true,
         ordersCreate: true,
         customersCreate: true,
+        customersHideLocationRelatedFields: false,
         toursCreate: true,
       }),
     },

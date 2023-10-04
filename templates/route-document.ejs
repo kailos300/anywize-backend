@@ -178,7 +178,7 @@
         </div>
       </div>
       <% for (let i = 0; i < route.pathway.length; i += 1) { %>
-        <div class="p-1 font-12 mb-6" style="background-color: <%= i % 2 === 0 ? 'rgba(249, 249, 249, 1)' : 'white' %>;">
+        <div class="p-1 font-6 mb-6" style="background-color: <%= i % 2 === 0 ? 'rgba(249, 249, 249, 1)' : 'white' %>;">
           <div class="inline-block">
             <b><%= route.pathway[i].name %></b>
           </div>
@@ -191,12 +191,12 @@
           <%
             let x = [
               ['Nr.', '5%', (order, i) => i + 1],
-              ['Versender', '15%', (order) => order.User ? `${order.User.name} ${order.User.surname}` : '-'],
+              ['Versender', '25%', (order) => order.User ? `${order.User.name} ${order.User.surname}` : '-'],
               ['Lieferscheinnr', '15%', (order) => order.number || '-'],
               ['Packstücke', '15%', () => 1],
-              ['Kiste', '15%', () => '&nbsp;'],
-              ['Unterschrift', '15%', () => '&nbsp;'],
-              ['Bemerkung', '15%', () => '&nbsp;'],
+              ['Kiste', '10%', () => '&nbsp;'],
+              ['Unterschrift', '10%', () => '&nbsp;'],
+              ['Bemerkung', '10%', () => '&nbsp;'],
             ];
           %>
 
@@ -223,7 +223,7 @@
           <% } %>
           <div class="row">
             <div class="col pr-1 text-center" style="width: 5%">&nbsp;</div>
-            <div class="col pr-1 text-center" style="width: 15%">&nbsp;</div>
+            <div class="col pr-1 text-center" style="width: 25%">&nbsp;</div>
             <div class="col pr-1 text-right" style="width: 15%">
               <div style="padding-top: 8px;">
                 Pakete je Kunde
