@@ -1,3 +1,15 @@
+declare type Permissions = {
+  routesList: boolean;
+  routesMap: boolean;
+  routesCreateForDriver: boolean;
+  routesCreateDeliveryOrder: fboolean;
+  ordersList: boolean;
+  ordersListSupplier: boolean;
+  ordersCreate: boolean;
+  customersCreate: boolean;
+  toursCreate: boolean;
+};
+
 declare type User = {
   id: number;
   supplier_id: number;
@@ -8,6 +20,7 @@ declare type User = {
   token: string;
   admin: boolean;
   active: boolean;
+  permissions: Permissions;
   updated_at: string;
   created_at: string;
 };
@@ -89,6 +102,7 @@ declare type Order = {
   supplier_id: number;
   customer_id: number;
   route_id?: number;
+  user_id?: number;
   description: string;
   delivered_at: string;
   number: string;

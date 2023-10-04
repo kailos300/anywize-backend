@@ -76,6 +76,7 @@ export default {
         offset: parseInt(<any>offset || 0, 10),
         order: [['id', 'DESC']],
         where: {
+          ...(!user.permissions?.ordersListSupplier ? { created_by_user_id: user.id } : {}),
           supplier_id: user.supplier_id,
           ...where,
         },
@@ -149,6 +150,7 @@ export default {
       const order = await models.Orders.create({
         ...body,
         supplier_id: user.supplier_id,
+        created_by_user_id: user.id,
       });
 
       return res.send(order);
