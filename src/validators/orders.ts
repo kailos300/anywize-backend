@@ -5,6 +5,8 @@ const CreateSchema = Joi.object().keys({
   customer_id: Joi.number().integer().required(),
   description: Joi.string().required(),
   number: Joi.string().optional().allow(null, ''),
+  packages: Joi.number().integer().optional().allow(null),
+  departure: Joi.string().optional().allow(null, '').valid('MORNING', 'EVENING', 'NIGHT'),
 });
 
 const ListDeliveredSchema = Joi.object().keys({

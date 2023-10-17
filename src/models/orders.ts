@@ -18,6 +18,14 @@ export default function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
     },
+    packages: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    departure: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     number: {
       type: DataTypes.STRING,
     },

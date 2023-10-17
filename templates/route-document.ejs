@@ -147,7 +147,13 @@
       .border-bottom-1 {
         border-bottom: 1px solid gray;
       }
-
+      <%
+        const DEPARTURES = {
+          "MORNING": "Morgens",
+          "EVENING": "Abend",
+          "NIGHT": "Nachts"
+        }
+      %>
     </style>
   </head>
   <body>
@@ -173,7 +179,7 @@
           <div class="inline-block px-32">
             Abfahrt
             <br />
-            <b>Morgens</b>
+            <b><%= route.pathway[0].Orders[0].departure ? DEPARTURES[route.pathway[0].Orders[0].departure] : '-' %></b>
           </div>
         </div>
       </div>
@@ -193,7 +199,7 @@
               ['Nr.', '5%', (order, i) => i + 1],
               ['Versender', '25%', (order) => order.User ? `${order.User.name} ${order.User.surname}` : '-'],
               ['Lieferscheinnr', '15%', (order) => order.number || '-'],
-              ['Packstücke', '15%', () => 1],
+              ['Packstücke', '15%', (order) => order.packages || '-'],
               ['Kiste', '10%', () => '&nbsp;'],
               ['Unterschrift', '10%', () => '&nbsp;'],
               ['Bemerkung', '10%', () => '&nbsp;'],
@@ -231,7 +237,7 @@
             </div>
             <div class="col pr-1 text-center" style="width: 15%">
               <div style="padding-top: 8px;">
-                <%= route.pathway[i].Orders.length %>
+                <%= route.pathway[i].Orders.reduce((acc, o) => acc + (o.packages || 0), 0) %>
               </div>
             </div>
           </div>
@@ -246,7 +252,7 @@
         </div>
         <div class="col pr-1 text-center" style="width: 15%">
           <div style="padding-top: 8px;">
-            <%= route.pathway.reduce((acc, cur) => acc + cur.Orders.length, 0) %>
+            <%= route.pathway.reduce((acc, cur) => acc + (cur.Orders.reduce((acc, o) => acc + (o.packages || 0), 0)), 0) %>
           </div>
         </div>
       </div>
