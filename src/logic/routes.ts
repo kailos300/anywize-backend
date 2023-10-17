@@ -283,21 +283,26 @@ export default {
       throw createError(400, "INVALID_TOUR");
     }
 
-    const salesmanOrderedCustomers =
-      await RoutesCustomersOrdering.solveWithMatrix(
-        {
-          id: 0,
-          name: "Start",
-          latitude: supplier.coordinates.coordinates[1],
-          longitude: supplier.coordinates.coordinates[0],
-        },
-        customers.map((c) => ({
-          id: c.id,
-          name: c.name,
-          latitude: c.coordinates.coordinates[1],
-          longitude: c.coordinates.coordinates[0],
-        }))
-      );
+    let salesmanOrderedCustomers = customers;
+
+    if (body.type !== "DELIVERY") {
+      salesmanOrderedCustomers =
+        await RoutesCustomersOrdering.solveWithMatrix(
+          {
+            id: 0,
+            name: "Start",
+            latitude: supplier.coordinates.coordinates[1],
+            longitude: supplier.coordinates.coordinates[0],
+          },
+          customers.map((c) => ({
+            id: c.id,
+            name: c.name,
+            latitude: c.coordinates.coordinates[1],
+            longitude: c.coordinates.coordinates[0],
+          }))
+        );
+    }
+
     const orderedCustomersIds = salesmanOrderedCustomers.map((c) => c.id);
 
     const ordered: CustomerWithOrders[] = customers.sort((a, b) => {
