@@ -3,7 +3,7 @@ import createError from "http-errors";
 import Sequelize from "sequelize";
 import { groupBy } from "lodash";
 import * as ejs from "ejs";
-import * as pdf from "html-pdf";
+import axios from 'axios';
 import { DateTime } from "luxon";
 import models from "../models";
 import RoutesLogic from "../logic/routes";
@@ -11,6 +11,7 @@ import S3Logic from "../logic/s3";
 import RoutesValidators from "../validators/routes";
 import { parseFilterDates, extendedQueryString } from "../logic/query";
 import RoutesEvents from "../logic/routes-events";
+const { Readable } = require('stream');
 
 const emitter = RoutesEvents();
 
@@ -187,10 +188,26 @@ export default {
 
           // res.setHeader('Content-Disposition', `attachment; filename=${route.uuid}.pdf`);
 
-          pdf.create(str).toStream(function (err, stream) {
-            if (err) {
-              throw err;
+          axios.post(
+            'http://18.184.221.195:3001/html-to-pdf',
+            {
+              body: str,
+              margin: {
+                left: "2cm",
+                top: "2cm",
+                bottom: "2cm",
+                right: "2cm",
+              },
+            },
+            {
+              responseType: "arraybuffer",
+              auth: {
+                username: "admin",
+                password: "gdo",
+              },
             }
+          ).then(({ data }) => {
+            const stream = Readable.from(data);
 
             stream.pipe(res);
           });
@@ -272,10 +289,26 @@ export default {
 
           // res.setHeader('Content-Disposition', `attachment; filename=${stop.Customer.alias}.pdf`);
 
-          pdf.create(str).toStream(function (err, stream) {
-            if (err) {
-              throw err;
+          axios.post(
+            'http://18.184.221.195:3001/html-to-pdf',
+            {
+              body: str,
+              margin: {
+                left: "2cm",
+                top: "2cm",
+                bottom: "2cm",
+                right: "2cm",
+              },
+            },
+            {
+              responseType: "arraybuffer",
+              auth: {
+                username: "admin",
+                password: "gdo",
+              },
             }
+          ).then(({ data }) => {
+            const stream = Readable.from(data);
 
             stream.pipe(res);
           });
