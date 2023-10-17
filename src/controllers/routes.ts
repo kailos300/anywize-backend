@@ -187,13 +187,7 @@ export default {
 
           // res.setHeader('Content-Disposition', `attachment; filename=${route.uuid}.pdf`);
 
-          pdf.create(str, {
-            childProcessOptions: {
-              env: {
-                OPENSSL_CONF: '/dev/null',
-              },
-            }
-          }).toStream(function (err, stream) {
+          pdf.create(str).toStream(function (err, stream) {
             if (err) {
               throw err;
             }
@@ -278,13 +272,7 @@ export default {
 
           // res.setHeader('Content-Disposition', `attachment; filename=${stop.Customer.alias}.pdf`);
 
-          pdf.create(str, {
-            childProcessOptions: {
-              env: {
-                OPENSSL_CONF: '/dev/null',
-              },
-            }
-          }).toStream(function (err, stream) {
+          pdf.create(str).toStream(function (err, stream) {
             if (err) {
               throw err;
             }

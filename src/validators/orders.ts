@@ -3,7 +3,7 @@ import Validate from './index';
 
 const CreateSchema = Joi.object().keys({
   customer_id: Joi.number().integer().required(),
-  description: Joi.string().required(),
+  description: Joi.string().optional().allow(null, ''),
   number: Joi.string().optional().allow(null, ''),
   packages: Joi.number().integer().optional().allow(null),
   departure: Joi.string().optional().allow(null, '').valid('MORNING', 'MIDDAY', 'EVENING', 'NIGHT'),
