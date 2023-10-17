@@ -6,7 +6,7 @@ const CreateSchema = Joi.object().keys({
   description: Joi.string().required(),
   number: Joi.string().optional().allow(null, ''),
   packages: Joi.number().integer().optional().allow(null),
-  departure: Joi.string().optional().allow(null, '').valid('MORNING', 'EVENING', 'NIGHT'),
+  departure: Joi.string().optional().allow(null, '').valid('MORNING', 'MIDDAY', 'EVENING', 'NIGHT'),
 });
 
 const ListDeliveredSchema = Joi.object().keys({
