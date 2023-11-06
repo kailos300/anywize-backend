@@ -9,7 +9,8 @@ UPDATE `users` SET `permissions` = JSON_OBJECT(
         "ordersCreate", true,
         "customersCreate", true,
         "customersHideLocationRelatedFields", false,
-        "toursCreate", true
+        "toursCreate", true,
+        "showMasterData", true
 );
 
 ALTER TABLE `orders` ADD `created_by_user_id` INT NULL AFTER `route_id`, ADD INDEX (`created_by_user_id`);

@@ -36,7 +36,7 @@ export function getPublicInfo(user: User): PublicUser {
     'created_at',
     'updated_at',
     'password',
-    'admin',
+    // 'admin',
     'token',
   ]);
 }

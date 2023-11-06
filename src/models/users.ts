@@ -44,6 +44,7 @@ export default function(sequelize, DataTypes) {
         customersCreate: true,
         customersHideLocationRelatedFields: false,
         toursCreate: true,
+        showMasterData: true,
       }),
     },
     updated_at: {
