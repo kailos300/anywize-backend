@@ -294,7 +294,7 @@ describe('Routes tests', () => {
     expect(res.status).equal(200);
     expect(res.body[0]?.id).not.to.be.equal(route.id);
 
-    await models.Routes.update({ start_date: DateTime.now().minus({ days: 1 })}, {
+    await models.Routes.update({ start_date: DateTime.now().minus({ days: 1 }).toISO() }, {
       where: { id: route.id },
     });
 
@@ -306,7 +306,7 @@ describe('Routes tests', () => {
     expect(res.body[0].id).equal(route.id);
 
     res = await request
-      .get(`/api/routes?start_date_from=${DateTime.now().minus({ days: 2 })}&start_date_to=${DateTime.now().plus({ days: 1 })}`)
+      .get(`/api/routes?start_date_from=${DateTime.now().minus({ days: 2 }).toISO()}&start_date_to=${DateTime.now().plus({ days: 1 }).toISO()}`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.status).equal(200);
