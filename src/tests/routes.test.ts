@@ -126,6 +126,10 @@ describe('Routes tests', () => {
       keybox_code: customer.keybox_code || null,
       Orders: [
         {
+          User: null,
+          created_by_user_id: null,
+          departure: null,
+          packages: 0,
           id: order.id,
           supplier_id: order.supplier_id,
           customer_id: order.customer_id,
@@ -175,6 +179,10 @@ describe('Routes tests', () => {
       keybox_code: customerThree.keybox_code || null,
       Orders: [
         {
+          User: null,
+          created_by_user_id: null,
+          departure: null,
+          packages: 0,
           id: orderFour.id,
           supplier_id: orderFour.supplier_id,
           customer_id: orderFour.customer_id,
@@ -207,6 +215,10 @@ describe('Routes tests', () => {
       deposit_agreement: customerTwo.deposit_agreement,
       keybox_code: customerTwo.keybox_code || null,
       Orders: [{
+        User: null,
+        created_by_user_id: null,
+        departure: null,
+        packages: 0,
         id: orderTwo.id,
         supplier_id: orderTwo.supplier_id,
         customer_id: orderTwo.customer_id,
@@ -214,6 +226,10 @@ describe('Routes tests', () => {
         number: orderTwo.number,
         delivered_at: null,
       }, {
+        User: null,
+        created_by_user_id: null,
+        departure: null,
+        packages: 0,
         id: orderThree.id,
         supplier_id: orderThree.supplier_id,
         customer_id: orderThree.customer_id,

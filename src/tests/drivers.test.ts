@@ -197,6 +197,10 @@ describe('Drivers tests', () => {
       keybox_code: customers[0].customer.keybox_code || null,
       Orders: [
         {
+          User: null,
+          created_by_user_id: null,
+          departure: null,
+          packages: 0,
           id: customers[0].orders[0].id,
           supplier_id: customers[0].orders[0].supplier_id,
           customer_id: customers[0].orders[0].customer_id,
@@ -205,6 +209,10 @@ describe('Drivers tests', () => {
           delivered_at: null,
         },
         {
+          User: null,
+          created_by_user_id: null,
+          departure: null,
+          packages: 0,
           id: customers[0].orders[1].id,
           supplier_id: customers[0].orders[1].supplier_id,
           customer_id: customers[0].orders[1].customer_id,
@@ -213,6 +221,10 @@ describe('Drivers tests', () => {
           delivered_at: null,
         },
         {
+          User: null,
+          created_by_user_id: null,
+          departure: null,
+          packages: 0,
           id: customers[0].orders[2].id,
           supplier_id: customers[0].orders[2].supplier_id,
           customer_id: customers[0].orders[2].customer_id,

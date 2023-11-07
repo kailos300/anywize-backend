@@ -1,0 +1,53 @@
+name: Run tests
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    env:
+      ANYWIZE_MYSQL_USERNAME: root
+      ANYWIZE_MYSQL_PASSWORD: root
+      ANYWIZE_MYSQL_DATABASE: lobu
+      ANYWIZE_DO_SPACES_URL: 123123aces.com
+      ANYWIZE_DO_SPACES_KEY: asddasdasd
+      ANYWIZE_DO_SPACES_SECRET: Yasdasdasd
+      ANYWIZE_DO_SPACES_BUCKET: anywize-accounting-space
+      ANYWIZE_USE_HARDCODED_EMAIL_SETTINGS: true
+      PORT: 5100
+
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Set up MySQL
+        run: |
+          sudo /etc/init.d/mysql start
+          mysql -u root -proot -e 'ALTER USER "root"@"localhost" IDENTIFIED WITH mysql_native_password BY "root"'
+
+      - run: mysql --version
+      - run: npm install
+
+      - name: create env file
+        run: |
+          printf "ANYWIZE_MYSQL_HOST=localhost\nANYWIZE_MYSQL_USERNAME=${{ env.ANYWIZE_MYSQL_USERNAME }}\nANYWIZE_MYSQL_PASSWORD=${{ env.ANYWIZE_MYSQL_PASSWORD }}\nANYWIZE_MYSQL_DATABASE=${{ env.ANYWIZE_MYSQL_DATABASE }}\nANYWIZE_DO_SPACES_URL=${{ env.ANYWIZE_DO_SPACES_URL }}\nANYWIZE_DO_SPACES_KEY=${{ env.ANYWIZE_DO_SPACES_KEY }}\nANYWIZE_DO_SPACES_SECRET=${{ env.ANYWIZE_DO_SPACES_SECRET }}\nANYWIZE_DO_SPACES_BUCKET=${{ env.ANYWIZE_DO_SPACES_BUCKET }}\nANYWIZE_USE_HARDCODED_EMAIL_SETTINGS=${{ env.ANYWIZE_USE_HARDCODED_EMAIL_SETTINGS }}\nPORT=${{ env.PORT }}" > ./.test.env
+
+      - run: cat .test.env
+      - run: npm run dbMigrateTest
+      - run: npm run test:coverage
+
+      - uses: devmasx/coverage-check-action@v1.2.0
+        with:
+          type: lcov
+          result_path: ./coverage/lcov.info
+          min_coverage: 70
+          token: ${{ github.token }}
