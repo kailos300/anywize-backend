@@ -72,7 +72,6 @@ describe('Orders tests', () => {
     expect(res.status).equal(400);
     expect(res.body.errors).eql({
       customer_id: '"customer_id" is required',
-      description: '"description" is required',
     });
 
     // client from another supplier should return error
@@ -116,7 +115,6 @@ describe('Orders tests', () => {
     expect(res.status).equal(400);
     expect(res.body.errors).eql({
       customer_id: '"customer_id" is required',
-      description: '"description" is required',
     });
 
     // invalid order number
