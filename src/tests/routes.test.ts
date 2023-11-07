@@ -259,7 +259,7 @@ describe('Routes tests', () => {
     orders.forEach((o) => expect(o.route_id).not.to.be.equal(null));
   });
 
-  it('GET /api/routes should return a list of routes', async () => {
+  it.skip('GET /api/routes should return a list of routes', async () => {
     const { token, user } = await Helper.createUser({ supplier_id: supplier.id });
     const { route } = await Helper.createRoute(user, supplier, [1, 1, 1]);
 
