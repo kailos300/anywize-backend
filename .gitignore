@@ -69,3 +69,5 @@ ecosystem.config.js
 coverage.lcov
 apidoc
 handleWindowsEnv.js
+package-lock.json
+yarn.lock
