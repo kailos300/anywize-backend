@@ -8,16 +8,16 @@
   "license": "ISC",
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "npm run clean && NODE_ENV=dev nodemon",
+    "dev": "npm run clean && cross-env NODE_ENV=dev nodemon",
     "clean": "rimraf dist",
     "build": "npm run clean && mkdir -p dist && node ./node_modules/esbuild-node-tsc/dist/index --config=esbuild.config.js && npm run apidoc",
-    "test": "yarn truncateTestDatabase && yarn dbMigrateTest && NODE_ENV=test ts-mocha --require dotenv/config dotenv_config_path=.test.env --require ./src/index.ts 'src/tests/**/*.{js,ts}' -t 70000 --exit",
-    "runTest": "NODE_ENV=test ts-mocha --require dotenv/config dotenv_config_path=.test.env --require ./src/index.ts 'src/tests/**/*.{js,ts}' -t 70000 --exit",
-    "test:coverage": "yarn truncateTestDatabase && yarn dbMigrateTest && NODE_ENV=test nyc ts-mocha --require dotenv/config dotenv_config_path=.test.env --require ./src/index.ts 'src/tests/**/*.{js,ts}' -t 70000 --exit",
-    "dbMigrateTest": "NODE_ENV=test node -r dotenv/config -e 'require(\"./postgrator/postgrator.js\").migrate()' dotenv_config_path=.test.env",
-    "truncateTestDatabase": "NODE_ENV=test node -r dotenv/config -e 'require(\"./postgrator/postgrator.js\").truncateDatabase()' dotenv_config_path=.test.env",
+    "test": "yarn truncateTestDatabase && yarn dbMigrateTest && cross-env NODE_ENV=test ts-mocha --require dotenv/config dotenv_config_path=.test.env --require ./src/index.ts 'src/tests/**/*.{js,ts}' -t 70000 --exit",
+    "runTest": "cross-env NODE_ENV=test ts-mocha --require dotenv/config dotenv_config_path=.test.env --require ./src/index.ts 'src/tests/**/*.{js,ts}' -t 70000 --exit",
+    "test:coverage": "yarn truncateTestDatabase && yarn dbMigrateTest && cross-env NODE_ENV=test nyc ts-mocha --require dotenv/config dotenv_config_path=.test.env --require ./src/index.ts 'src/tests/**/*.{js,ts}' -t 70000 --exit",
+    "dbMigrateTest": "cross-env NODE_ENV=test node -r dotenv/config -e 'require(\"./postgrator/postgrator.js\").migrate()' dotenv_config_path=.test.env",
+    "truncateTestDatabase": "cross-env NODE_ENV=test node -r dotenv/config -e 'require(\"./postgrator/postgrator.js\").truncateDatabase()' dotenv_config_path=.test.env",
     "apidoc": "node ./node_modules/apidoc/bin/apidoc -f \"./src/routes/import.ts\" -o apidoc/",
-    "clean:db": "DEBUG=anywize* NODE_ENV=test ts-node --transpile-only --require dotenv/config ./src/fix-customers"
+    "clean:db": "cross-env DEBUG=anywize* NODE_ENV=test ts-node --transpile-only --require dotenv/config ./src/fix-customers"
   },
   "dependencies": {
     "@sentry/node": "^6.11.0",

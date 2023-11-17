@@ -71,3 +71,4 @@ apidoc
 handleWindowsEnv.js
 package-lock.json
 yarn.lock
+etsc.config.js
