@@ -29,7 +29,7 @@ const dbConfig = {
   database: getenv('ANYWIZE_MYSQL_DATABASE'),
   host: getenv('ANYWIZE_MYSQL_HOST'),
   port: getenv('ANYWIZE_MYSQL_PORT', 3306),
-  dialect: 'mysql',
+  dialect: getenv('ANYWIZE_DATABASE_DIALECT', 'mysql'),
   logging: false,
 };
 Debug('Starting sequelize');
