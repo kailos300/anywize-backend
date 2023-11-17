@@ -68,3 +68,4 @@ dist
 ecosystem.config.js
 coverage.lcov
 apidoc
+handleWindowsEnv.js
